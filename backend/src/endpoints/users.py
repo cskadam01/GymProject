@@ -56,8 +56,8 @@ def login(user: LoginUser, response: Response):
         key="access_token",
         value=token,
         httponly=True,
-        secure=True,
-        samesite="strict",
+        secure=False,
+        samesite="lax",
         max_age=3600  # opcionális: 1 óra
     )
 
