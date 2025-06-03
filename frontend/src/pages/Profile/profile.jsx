@@ -1,5 +1,7 @@
 import { useState } from "react";
 import axios from 'axios';
+import { Navbar } from "../../navbar/navbar";
+
 
 export const Profile = () => {
     const [r, setR] = useState('');
@@ -25,6 +27,8 @@ export const Profile = () => {
 
             <p>{r}</p>
             <button onClick={getUser}>Get User</button>
+
+            <Navbar/>
         
         </>
 

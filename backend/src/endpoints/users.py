@@ -93,6 +93,11 @@ def register(user: RegisterUser):
 
     return {"success" : f"{user.name} sikeresen regisztrálva"}
 
+@router.post("/logout")
+def logout(response: Response):
+    response.delete_cookie(key="access_token")
+    return {"message": "Sikeres kijelentkezés"}
+
 
 
 
