@@ -4,14 +4,20 @@ import axios from "axios";
 
 export const BrowseExercises = () => {
     const [exercises, setExercises] = useState([])
+    const [error, setError] = useState("")
+    const [res, setRes] = useState("")
+    
     
 
     useEffect(() =>{
         const GetAllExercise = async () =>{
-
             try{
-                const response = await axios.get("http://localhost:8000/exercise/get-all-exercise")
+                const response = await axios.get("http://localhost:8000/exercise/get-all-exercise",
+                    {
 
+                        withCredentials: true
+                    }
+                )
                 if (response.status == 200){
                     setExercises(response.data)
                     console.log("Adatok eltárolva", exercises)
@@ -29,12 +35,48 @@ export const BrowseExercises = () => {
     useEffect(() => {
         console.log("Exercisek frissültek:", exercises);
       }, [exercises]); //ebbe a tömbbe kell írni a figyelni kívánt objektumot, aminek a változásakor frissül a render
+
+
+    const addToDiary = async (exerciseID) => {
+        try{
+            const response = await axios.post("http://localhost:8000/exercise/save-to-diary",{
+                exerciseID
+            },
+            {
+                withCredentials: true
+            }
+
+            )
+            if(response.status === 200){
+                setRes("Feladat sikeresen hozzá adva a naplódhoz")
+            }
+        }
+
+        catch (err){
+            setError("Valami hiba lépett fel a naplózás során")
+
+        }
+        
+    }
       
 
     return(
         <>
-       
-            <p>{exercises}</p>
+
+            <>
+            {exercises.map((exercise, index) => (
+                <div key={index}>
+                    <h3>{exercise.exer_name}</h3>
+                    <p>Izomcsoport: {exercise.muscle}</p>
+                    <p>Típus: {exercise.type}</p>
+                    <p>Leírás: {exercise.exer_description}</p>
+                    <p>Elmentve: {exercise.saved ? "✅ Igen" : "❌ Nem"}</p>
+                    <button onClick={() => addToDiary(exercise.id)}>+</button>
+
+                    <hr />
+                </div>
+            ))}
+</>
         
         </>
 

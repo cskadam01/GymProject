@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from src.firebase import db
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
+from src.token import get_current_user
+from google.cloud import firestore
 
 router = APIRouter(
     prefix="/exercise",
@@ -15,24 +17,64 @@ class AddExercise(BaseModel):
     muscle:str
     e_type:str
 
+class ExerId(BaseModel):
+    exerciseID : str
 
+
+
+
+@router.post("/save-to-diary")
+
+
+def save_to_diary(exer : ExerId, current_user: dict = Depends(get_current_user)):
+    try:
+        print("EXER ID:", exer.exerciseID)
+        print("USER NAME:", current_user["name"])
+
+        docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
+
+
+
+        user_ref = docs[0].reference
+
+        user_ref.update({
+                "saved_exercises": firestore.ArrayUnion([exer.exerciseID])   #feladat arrayhez való apendálás a feladat idjét
+            })
+        
+        return{"success" : "Feladat hozzá adva a naplóhoz"}
+
+    except Exception as e:
+        print("Hiba Firestore frissítésnél:", e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Naplózás sikertelen: {e}")
+       
+    
 
 
 @router.get("/get-all-exercise")
-def get_all_exercise():
+def get_all_exercise(current_user: dict = Depends(get_current_user)):
     try:
+        # 1. Összes feladat lekérése
         docs = db.collection("exercise").get()
         exercises = []
 
+        # 2. Felhasználó dokumentum lekérdezése
+        user_docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
+        if not user_docs:
+            raise HTTPException(status_code=404, detail="Felhasználó nem található")
+
+        # 3. Elmentett gyakorlatok listája
+        saved = user_docs[0].to_dict().get("saved_exercises", [])
+
+        # 4. Végigmegyünk az összes feladaton, és megnézzük, el van-e mentve
         for i in docs:
             data = i.to_dict()
+            data["id"] = i.id
+            data["saved"] = data["id"] in saved
             exercises.append(data)
 
         return exercises
-        
 
-
-    except Exception as e: 
+    except Exception as e:
         raise HTTPException(status_code=400, detail=f"Hiba: {e}")
 
 @router.post("/add-new-exercise")
@@ -53,3 +95,17 @@ def add_new_exercise(e : AddExercise):
 
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Hiba: {e}")
+    
+
+
+@router.get("/exer/{id}")
+def get_exercise(id: str):
+    print("KERESÉS:", id)
+    doc_ref = db.collection("exercise").document(id)
+    doc = doc_ref.get()
+
+    if not doc.exists:
+        raise HTTPException(status_code=404, detail="Nincs ilyen feladat")
+    
+
+    return doc.to_dict()

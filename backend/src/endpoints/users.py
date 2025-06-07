@@ -85,7 +85,8 @@ def register(user: RegisterUser):
         "name" : user.name,
         "age" : user.age,
         "password": hashed_password,
-        "email" : user.email
+        "email" : user.email,
+        "saved_exercises": []
         
     }
 

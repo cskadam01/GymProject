@@ -1,9 +1,9 @@
 from fastapi import FastAPI
-from src.endpoints import users
+from src.endpoints import users, exercise, diary
 import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
-from src.endpoints import exercise
+
 
 
 
@@ -27,6 +27,8 @@ app.add_middleware(
 # ----------Endpoint fileok csatolása----------
 app.include_router(users.router)
 app.include_router(exercise.router)
+app.include_router(diary.router)
+
 
 
 
