@@ -1,5 +1,5 @@
 import { use, useEffect, useState, useTransition } from "react";
-import axios from "axios";
+import api from "../../../api";
 
 export const GetDiaryDetail = ( {exer_id, onError}) => {
 
@@ -9,9 +9,8 @@ export const GetDiaryDetail = ( {exer_id, onError}) => {
     useEffect(() => {
         const LoadProgression = async () => {
           try {
-            const response = await axios.get(
-              `http://localhost:8000/diary/by-exercise?exercise_id=${exer_id}`,
-              { withCredentials: true }
+            const response = await api.get(
+              `/diary/by-exercise?exercise_id=${exer_id}`
             );
             setLogs(response.data);
           } catch (err) {

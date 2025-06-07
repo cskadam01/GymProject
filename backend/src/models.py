@@ -1,9 +1,18 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, create_engine
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
-from datetime import datetime
-import os 
-from dotenv import load_dotenv
+import os
 import sqlite3
+from datetime import datetime
+
+from dotenv import load_dotenv
+from sqlalchemy import (
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    create_engine,
+)
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 load_dotenv()
 
@@ -13,7 +22,6 @@ db_url = os.getenv("DATABASE_URL")
 engine = create_engine(db_url, connect_args={"check_same_thread": False})
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 
 
 Base = declarative_base()
@@ -44,7 +52,7 @@ class Exercise(Base):
     name = Column(String(50), unique=True)
     etype = Column(String(50))
     description = Column(Text)
-    created_by = Column(Integer, ForeignKey('users.id'))
+    created_by = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
 
     creator = relationship("User", back_populates="exercises")
@@ -55,8 +63,8 @@ class Progression(Base):
     __tablename__ = "progressions"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    exercise_id = Column(Integer, ForeignKey('exercises.id'))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    exercise_id = Column(Integer, ForeignKey("exercises.id"))
     weight = Column(Integer)
     reps = Column(Integer)
     sets = Column(Integer)
@@ -64,9 +72,6 @@ class Progression(Base):
 
     user = relationship("User", back_populates="progressions")
     exercise = relationship("Exercise", back_populates="progressions")
-
-
-
 
 
 # ------------------ SEGÉDFÜGGVÉNY ------------------
@@ -77,6 +82,8 @@ def get_db():
     finally:
         db.close()
 
-print("Használt adatbázis:", db_url)
-# Tábla létrehozás
-Base.metadata.create_all(engine)
+
+if __name__ == "__main__":
+    print("Használt adatbázis:", db_url)
+    # Tábla létrehozás csak futtatáskor
+    Base.metadata.create_all(engine)

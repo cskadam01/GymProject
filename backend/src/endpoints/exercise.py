@@ -1,53 +1,54 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from google.cloud import firestore
+from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 from pydantic import BaseModel
 from src.firebase import db
-from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 from src.token import get_current_user
-from google.cloud import firestore
 
-router = APIRouter(
-    prefix="/exercise",
-    tags=["Exercise"]
-)
+router = APIRouter(prefix="/exercise", tags=["Exercise"])
 
 
 class AddExercise(BaseModel):
-    name:str
-    description:str
-    muscle:str
-    e_type:str
+    name: str
+    description: str
+    muscle: str
+    e_type: str
+
 
 class ExerId(BaseModel):
-    exerciseID : str
-
-
+    exerciseID: str
 
 
 @router.post("/save-to-diary")
-
-
-def save_to_diary(exer : ExerId, current_user: dict = Depends(get_current_user)):
+def save_to_diary(exer: ExerId, current_user: dict = Depends(get_current_user)):
     try:
         print("EXER ID:", exer.exerciseID)
         print("USER NAME:", current_user["name"])
 
-        docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
-
-
+        docs = (
+            db.collection("users")
+            .where("name", "==", current_user["name"])
+            .limit(1)
+            .get()
+        )
 
         user_ref = docs[0].reference
 
-        user_ref.update({
-                "saved_exercises": firestore.ArrayUnion([exer.exerciseID])   #feladat arrayhez való apendálás a feladat idjét
-            })
-        
-        return{"success" : "Feladat hozzá adva a naplóhoz"}
+        user_ref.update(
+            {
+                "saved_exercises": firestore.ArrayUnion(
+                    [exer.exerciseID]
+                )  # feladat arrayhez való apendálás a feladat idjét
+            }
+        )
+
+        return {"success": "Feladat hozzá adva a naplóhoz"}
 
     except Exception as e:
         print("Hiba Firestore frissítésnél:", e)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Naplózás sikertelen: {e}")
-       
-    
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Naplózás sikertelen: {e}"
+        )
 
 
 @router.get("/get-all-exercise")
@@ -58,7 +59,12 @@ def get_all_exercise(current_user: dict = Depends(get_current_user)):
         exercises = []
 
         # 2. Felhasználó dokumentum lekérdezése
-        user_docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
+        user_docs = (
+            db.collection("users")
+            .where("name", "==", current_user["name"])
+            .limit(1)
+            .get()
+        )
         if not user_docs:
             raise HTTPException(status_code=404, detail="Felhasználó nem található")
 
@@ -77,25 +83,26 @@ def get_all_exercise(current_user: dict = Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Hiba: {e}")
 
-@router.post("/add-new-exercise")
-def add_new_exercise(e : AddExercise):
 
+@router.post("/add-new-exercise")
+def add_new_exercise(e: AddExercise):
 
     try:
         exercise = {
-            "exer_name" : e.name,
-            "exer_description" : e.description,
-            "type" : e.e_type,
+            "exer_name": e.name,
+            "exer_description": e.description,
+            "type": e.e_type,
             "muscle": e.muscle,
-            "creation": SERVER_TIMESTAMP
+            "creation": SERVER_TIMESTAMP,
         }
-        
+
         db.collection("exercise").add(exercise)
-        return {"message" : f"{e.name} Sikeresen hozzáadva!"}
+        return {"message": f"{e.name} Sikeresen hozzáadva!"}
 
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Hiba: {e}")
-    
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Hiba: {e}"
+        )
 
 
 @router.get("/exer/{id}")
@@ -106,6 +113,5 @@ def get_exercise(id: str):
 
     if not doc.exists:
         raise HTTPException(status_code=404, detail="Nincs ilyen feladat")
-    
 
     return doc.to_dict()

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from 'axios';
+import api from '../api';
 import { Navbar } from "../../navbar/navbar";
 
 
@@ -9,9 +9,7 @@ export const Profile = () => {
 
       const getUser = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/users/me", {
-        withCredentials: true
-      });
+      const response = await api.get("/users/me");
       setR(response.data.user.name);
 
 

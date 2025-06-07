@@ -1,5 +1,5 @@
 import { useState, useEffect} from "react";
-import axios from "axios";
+import api from "../../api";
 
 
 export const BrowseExercises = () => {
@@ -12,12 +12,7 @@ export const BrowseExercises = () => {
     useEffect(() =>{
         const GetAllExercise = async () =>{
             try{
-                const response = await axios.get("http://localhost:8000/exercise/get-all-exercise",
-                    {
-
-                        withCredentials: true
-                    }
-                )
+                const response = await api.get("/exercise/get-all-exercise")
                 if (response.status == 200){
                     setExercises(response.data)
                     console.log("Adatok eltárolva", exercises)
@@ -39,14 +34,9 @@ export const BrowseExercises = () => {
 
     const addToDiary = async (exerciseID) => {
         try{
-            const response = await axios.post("http://localhost:8000/exercise/save-to-diary",{
+            const response = await api.post("/exercise/save-to-diary",{
                 exerciseID
-            },
-            {
-                withCredentials: true
-            }
-
-            )
+            })
             if(response.status === 200){
                 setRes("Feladat sikeresen hozzá adva a naplódhoz")
             }
