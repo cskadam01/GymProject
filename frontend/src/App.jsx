@@ -9,12 +9,14 @@ import { Profile } from "./pages/Profile/profile";
 import { BrowseExercises } from "./pages/BrowseExercises/browseExercises";
 import { Diary } from "./pages/Diary/diary";
 import { OpenedExer } from "./pages/Diary/Diarybyid/diarybyid";
+import { LandingPage } from "./pages/Landing/LandingPage";
 
 function App() {
     return(
         <>
         <Router>
             <Routes>
+            <Route path="/" element={<LandingPage/>}/>
             <Route path="/login" element={<Login/>}/>
             <Route path="/register" element={<Register/>}/>
             <Route path="/profile" element={<Profile/>}/>

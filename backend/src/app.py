@@ -16,7 +16,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5174"],  # vagy a saját domained
+    allow_origins=["http://localhost:5173"],  # vagy a saját domained
     allow_credentials=True,  # ⬅⬅⬅ FONTOS: kell a sütikhez!
     allow_methods=["*"],
     allow_headers=["*"],

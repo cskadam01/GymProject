@@ -1,0 +1,61 @@
+.landing-container {
+    height: 100vh;
+    background: #0f0f0f;
+    background: linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(117, 117, 117, 1) 100%);
+    display: flex;
+    flex-direction: column;         /* Függőleges rendezés */
+    justify-content: center;        /* Függőleges középre igazítás */
+    align-items: center;            /* Vízszintes középre igazítás */
+    position: relative;             /* Relatív pozícionálás a belső abszolút elemhez */
+}
+
+.landing-login{
+    position: absolute;             /* Abszolút helyezés */
+    top: 20px;                      /* Távolság fentről */
+    right: 20px;
+    padding: 10px;
+    border: solid 2px aliceblue;
+    background-color: transparent;
+    color: aliceblue;
+    border-radius: 10px;
+
+                       /* Távolság balról */
+}
+
+.landing-cont {
+    text-align: center;             /* Szöveg középre igazítása */
+}
+
+.landing-cont h1{
+    color: rgb(0, 0, 0);
+    font-size: 3.3rem;
+}
+.landing-cont p{
+    color: aliceblue;
+    font-size: 0.9rem;
+    
+}
+
+.landing-cont button{
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #0f0f0f;
+    color:aliceblue;
+    border-style: none;
+    transition: all 0.5s ease-in-out;
+   
+
+}
+
+
+.landing-cont button:hover{
+    background-color: aliceblue;
+    color: #0f0f0f;
+    -webkit-box-shadow:0px 0px 46px 27px rgba(56,59,58,0.28);
+    -moz-box-shadow: 0px 0px 46px 27px rgba(56,59,58,0.28); 
+    box-shadow: 0px 0px 46px 27px rgba(56,59,58,0.28);
+  
+
+}
+
+
