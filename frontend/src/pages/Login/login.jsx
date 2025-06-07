@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 
 
 
@@ -14,17 +14,10 @@ export const Login = () => {
 
     const HandleLogin = async(e) => {
         try{
-            const response = await axios.post("http://localhost:8000/users/login",
-                {
+            const response = await api.post("/users/login", {
                     name,
                     password
-                },
-                {
-                    withCredentials: true
-                }
-
-
-            );
+                });
             navigate("/profile");
 
             console.log(response.data)

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { AddNewRecord } from "./components/addnewrecord";
 import { GetDiaryDetail } from "./components/getDiaryDetails";
-import axios from "axios";
+import api from "../../api";
 
 export const OpenedExer = () => {
     const [exerName, setExerName] = useState("")
@@ -14,7 +14,7 @@ export const OpenedExer = () => {
         
         const GetExerByID = async () => {
             setLoading(true)
-            const response = await axios.get(`http://localhost:8000/exercise/exer/${id}`);
+            const response = await api.get(`/exercise/exer/${id}`);
             setExerName(response.data.exer_name);
             setLoading(false);
         };

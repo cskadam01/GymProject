@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api";
 import { Link } from "react-router-dom";
 
 
@@ -11,8 +11,7 @@ export const Diary = () => {
             try {
                
 
-                const response = await axios.get("http://localhost:8000/diary/user-diary",
-                    { withCredentials: true })
+                const response = await api.get("/diary/user-diary")
 
                 setDiary(response.data)
 

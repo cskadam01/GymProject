@@ -1,6 +1,7 @@
-from firebase_admin import credentials, firestore, initialize_app
 import os
+
 from dotenv import load_dotenv
+from firebase_admin import credentials, firestore, initialize_app
 
 load_dotenv()
 

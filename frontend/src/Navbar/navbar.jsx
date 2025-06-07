@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api";
 
 export const Navbar =() => {
 
@@ -7,7 +7,7 @@ export const Navbar =() => {
    
         const HandleLogout = async () => {
         try{
-        const response = await axios.post("http://localhost:8000/users/logout", {}, {withCredentials: true});
+        const response = await api.post("/users/logout", {});
         
 
         console.log("kijelentkezve:",response.data);
@@ -21,7 +21,7 @@ export const Navbar =() => {
     
 
     catch (err){
-        console.error(error)
+        console.error(err)
 
 
     }};
