@@ -39,7 +39,7 @@ def login(user: LoginUser, response: Response):
     
 
     if not db_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Helytelen felhasználónév")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Helytelen felhasználónév")
     
     user_data = db_user[0].to_dict()
 
@@ -48,7 +48,7 @@ def login(user: LoginUser, response: Response):
     
     if not bcrypt.checkpw   (user.password.encode("utf-8"),
     user_data["password"].encode("utf-8")):
-       raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Helytelen jelszó")
+       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Helytelen jelszó")
     
     token = create_access_token({"sub" : user_data["name"]})
 

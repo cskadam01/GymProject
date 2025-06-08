@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./login.css"
+import { Link } from "react-router-dom";
 
 
 
@@ -10,10 +12,11 @@ export const Login = () => {
     const [password, setPassword] = useState('');
     const [email, setemail] = useState('');
     const [age, setAge] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const HandleLogin = async(e) => {
-        try{
+    const HandleLogin = async (e) => {
+        try {
             const response = await axios.post("http://localhost:8000/users/login",
                 {
                     name,
@@ -33,46 +36,59 @@ export const Login = () => {
 
         }
 
-        catch(err){
+        catch (err) {
+            setError(err?.response?.data?.detail)
+
 
 
 
         }
-        
+
     };
 
 
-    return(
+    return (
 
-    <>  
-        <form action="">
-            
-            <input type="text"
-            placeholder="Felhasználónév"
-            name=""
-            value={name}
-            onChange={(e) => setName(e.target.value)} 
-            required
-            />
-            <br />
+        <>  <div className="login-container">
+            <form action="">
+                <div className="login-cont">
+                    <div className="login-margin">
+                    <h1>Bejelentkezés</h1>
+                    <div className="login-tilte-error">
+                    <p className="login-input-title"> Felhsználónév</p>
+                    {error === "Helytelen felhasználónév" && <p className="login-error-username">{error}</p>}
+                    </div>
 
-
-            <input type="text"
-            placeholder="Jelszó"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required 
-
-            
-            />
-            <br />
-
-            <button type="button" onClick={HandleLogin}>Login</button>
-
-        </form>
+                    <input type="text"
+                        placeholder="Felhasználónév"
+                        name=""
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
 
 
-    </>
+                    <br />
+                    <div className="login-tilte-error">
+                    <p className="login-input-title">Jelszó</p>
+                    {error === "Helytelen jelszó" && <p className="login-error">{error}</p>} </div>
+                        <input type="text"
+                        placeholder="Jelszó"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    <br />
+                    <Link to ={"/register"} style={{textDecoration:"none"}}>
+                    <p className="login-link">Még nincs Felhasználód?</p></Link>
+                    <button className="login-button" type="button" onClick={HandleLogin}>Login</button>
+                </div>
+                
+                </div>
+            </form>
+
+        </div>
+        </>
 
 
     )

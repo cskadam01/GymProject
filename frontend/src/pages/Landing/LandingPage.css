@@ -3,15 +3,15 @@
     background: #0f0f0f;
     background: linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(117, 117, 117, 1) 100%);
     display: flex;
-    flex-direction: column;         /* Függőleges rendezés */
-    justify-content: center;        /* Függőleges középre igazítás */
-    align-items: center;            /* Vízszintes középre igazítás */
-    position: relative;             /* Relatív pozícionálás a belső abszolút elemhez */
+    flex-direction: column;         
+    justify-content: center;       
+    align-items: center;            
+    position: relative;            
 }
 
 .landing-login{
-    position: absolute;             /* Abszolút helyezés */
-    top: 20px;                      /* Távolság fentről */
+    position: absolute;             
+    top: 20px;                     
     right: 20px;
     padding: 10px;
     border: solid 2px aliceblue;
@@ -19,11 +19,11 @@
     color: aliceblue;
     border-radius: 10px;
 
-                       /* Távolság balról */
+                       
 }
 
 .landing-cont {
-    text-align: center;             /* Szöveg középre igazítása */
+    text-align: center;            
 }
 
 .landing-cont h1{
@@ -37,8 +37,9 @@
 }
 
 .landing-cont button{
-    margin-top: 10px;
-    padding: 10px;
+    margin-top: 20px;
+    padding: 10px 20px 10px 20px;
+
     background-color: #0f0f0f;
     color:aliceblue;
     border-style: none;
