@@ -1,10 +1,11 @@
-import { use, useEffect, useState, useTransition } from "react";
+import { useEffect, useState} from "react";
 import axios from "axios";
 
-export const GetDiaryDetail = ( {exer_id, onError}) => {
+export const GetDiaryDetail = ( {exer_id, refresh_key}) => {
 
     const [logs, setLogs] = useState([])
-    const [localError, setLocalError] = useState(false);
+    const [loading, setLoading] = useState(true);
+    
 
     useEffect(() => {
         const LoadProgression = async () => {
@@ -16,22 +17,30 @@ export const GetDiaryDetail = ( {exer_id, onError}) => {
             setLogs(response.data);
           } catch (err) {
             if (err.response?.status === 404) {
-              onError();
-              setLocalError(true)
+            setLogs([])
+
             }
+          }
+
+          finally{
+            setLoading(false)
+
           }
         };
       
         LoadProgression();
-      }, [exer_id, onError]);
+      }, [exer_id, refresh_key ]);
 
-    if (localError) return null
-
+   
+    
     return(
-        <>
-            <div>
+        
+        logs.length === 0 ?(
+            <p>Még nincs nalpó</p> 
+
+        ):(<div>
                 {logs.map((item) =>(
-                    <div key={item.task_id}>
+                    <div key={item.id}>
                         <p>{item.date}</p>
                         <p>{item.exer_name}</p>
                         <p>{item.rep}</p>
@@ -47,9 +56,10 @@ export const GetDiaryDetail = ( {exer_id, onError}) => {
 
 
             </div>
-        
-        </>
-
+        )
+            
+    
+    
     )
 
 

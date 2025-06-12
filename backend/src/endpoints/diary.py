@@ -76,7 +76,16 @@ def get_diary_entries_by_exercise(exercise_id: str = Query(...), current_user : 
     if not docs:
         raise HTTPException(status_code=404, detail="Nincs ilyen feladatod naplózva.")
     
-    return [doc.to_dict() for doc in docs]
+    return [{"id": doc.id, **doc.to_dict()} for doc in docs]
+
+@router.get("/is-authorized")
+def is_exercise_authorized(exercise_id: str = Query(...), current_user: dict = Depends(get_current_user)):
+    if exercise_id in current_user.get("urls", []):
+        return {"authorized": True}
+    return {"authorized": False}
+
+
+    
 
 
 

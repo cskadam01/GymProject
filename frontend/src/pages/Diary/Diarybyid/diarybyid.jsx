@@ -9,35 +9,59 @@ export const OpenedExer = () => {
     const { id } = useParams();
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [isValid, setIsValid] = useState(false);
+    const [refresh, setRefresh] = useState(0);
 
     useEffect(() => {
         
+
+
+
         const GetExerByID = async () => {
-            setLoading(true)
-            const response = await axios.get(`http://localhost:8000/exercise/exer/${id}`);
-            setExerName(response.data.exer_name);
-            setLoading(false);
+            try{
+            
+            const Validate = await axios.get("http://localhost:8000/exercise/is-authorized", {params: {exercise_id: id}, withCredentials: true})
+            
+            setIsValid(Validate.data.authorized)
+                
+            if (Validate.data.authorized){
+                const response = await axios.get(`http://localhost:8000/exercise/exer/${id}`);
+                setExerName(response.data.exer_name);
+
+            }
+        }
+            catch(err){
+                console.error("hiba: ". err)
+
+            }
+            finally{
+                setLoading(False)
+
+            }
+
         };
         
         GetExerByID();
     }, [id]);
 
 
-    if (loading) return    <p>töltés</p>
+    if (loading) return    <p>Töltés</p>
 
-    if (error) return <p>Hibás feladat vagy nincs jogosultságod!</p>;
+    if(isValid === false){return <p>Nem naplózott feladatot próbálsz meg elérni</p>} 
+
+    
 
     return(
 
         <>
 
-
+j
     
 
         
         <>
-        <AddNewRecord exerName={exerName} exer_id={id}/>
-        <GetDiaryDetail exer_id={id} onError={() => setError(true)} /> 
+        <AddNewRecord exerName={exerName} exer_id={id} triggerRefresh = {()=> setRefresh(prev => prev + 1)}/>
+        <GetDiaryDetail exer_id={id} refresh_key={refresh} /> 
         </>
       
         
