@@ -121,7 +121,7 @@ export const Register = () => {
                         <input type="text"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Email"
+                            placeholder="példa@valami.com"
                             required />
                         <br />
 

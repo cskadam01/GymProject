@@ -80,9 +80,17 @@ def get_diary_entries_by_exercise(exercise_id: str = Query(...), current_user : 
 
 @router.get("/is-authorized")
 def is_exercise_authorized(exercise_id: str = Query(...), current_user: dict = Depends(get_current_user)):
-    if exercise_id in current_user.get("urls", []):
-        return {"authorized": True}
+    
+    
+    docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
+
+    saved_ids = docs[0].to_dict().get("saved_exercises", [])
+
+    if exercise_id in saved_ids:
+            return {"authorized": True}
     return {"authorized": False}
+    
+    
 
 
     

@@ -2,20 +2,14 @@ import { useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-export const AddNewRecord = ({ exerName, exer_id }) => { 
+export const AddNewRecord = ({ exerName, exer_id, triggerRefresh}) => { 
     const [weight, setWeight] = useState("")
     const [reps, setReps] = useState("")
-    const { exerID } = useParams();
+    
 
 
     const handleNewRecord = async() => { 
-        console.log({
-            exer_id,
-            exerName,
-            weight: Number(weight),
-            reps: Number(reps)
-          });
-        
+        try{
         const response = await axios.post("http://localhost:8000/diary/add-new-record", {
             exer_id,
             exerName,
@@ -24,6 +18,18 @@ export const AddNewRecord = ({ exerName, exer_id }) => {
         },{withCredentials:true}
     
     )
+
+    triggerRefresh()
+    setWeight("");
+    setReps("");
+    
+    }
+
+    catch(err){
+        alert("nem várt hiba")
+    }
+
+
 
      }
 

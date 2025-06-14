@@ -10,8 +10,6 @@ export const Login = () => {
 
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
-    const [email, setemail] = useState('');
-    const [age, setAge] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -29,6 +27,9 @@ export const Login = () => {
 
             );
             navigate("/profile");
+            setName("")
+            setPassword("")
+
 
             console.log(response.data)
 
@@ -72,7 +73,8 @@ export const Login = () => {
                     <div className="login-tilte-error">
                     <p className="login-input-title">Jelszó</p>
                     {error === "Helytelen jelszó" && <p className="login-error">{error}</p>} </div>
-                        <input type="text"
+                        <input type="password"
+                    
                         placeholder="Jelszó"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}

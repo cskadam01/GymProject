@@ -29,7 +29,27 @@ class RegisterUser(LoginUser):
 
 @router.get("/me")
 def get_me(current_user: dict = Depends(get_current_user)):
-    return {"message": "Sikeres azonosítás", "user": current_user}
+
+    users = db.collection("users").where("name", "==", current_user["name"]).get()
+
+    user = users[0].to_dict()
+
+
+    addedExer  = addedExer = len(user.get("saved_exercises", []))
+
+
+    print(current_user)
+
+
+
+
+
+    return {"message": "Sikeres azonosítás",
+            "user": user["name"],
+            "age": user["age"],
+            "email" : user["email"],
+            "exers": addedExer
+            }
 
 
 @router.post("/login")

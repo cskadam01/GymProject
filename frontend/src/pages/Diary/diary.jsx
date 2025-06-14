@@ -39,6 +39,7 @@ export const Diary = () => {
                             <Link to={`/diary/${item.id}`} key={item.id}>
                                 <p>{item.exer_name}</p>
                                 <p>{item.exer_description}</p>
+                                <br />
                             </Link>
                         </div>
 
