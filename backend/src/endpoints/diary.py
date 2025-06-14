@@ -37,6 +37,8 @@ def get_saved_exer(current_user: dict = Depends(get_current_user)):
                 data = doc.to_dict()
                 data["id"] = doc.id
                 saves.append(data)
+        
+        
 
         return saves
     

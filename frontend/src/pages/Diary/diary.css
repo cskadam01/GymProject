@@ -1,0 +1,93 @@
+.diary-conatiner {
+    background: #0f0f0f;
+    background: -webkit-linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
+    background: -moz-linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
+    background: linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(
+    startColorstr="#0F0F0F",
+    endColorstr="#3B3B3B",
+    GradientType=0
+    );
+    height: 100vh;
+    width: 100%;
+    position:fixed;
+    overflow: scroll;
+   
+    
+
+}
+
+.diary-item{
+  
+    margin-bottom: 30px;
+    align-items: center;
+    height: 6vh;
+    place-content: center;
+    align-content: center;
+    border-style: none;
+    background-color: #f1f1f1;
+    box-shadow: 0 2px 5px rgba(220, 220, 220, 0.2);
+    border-radius: 8px;
+    transition:  .5s ease-in-out;
+    width: 95%;
+    margin-left: 2.5%;
+
+}
+
+.diary-item:hover{
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+}
+
+
+.diary-cont{
+    padding-top: 30px;
+    
+    
+}
+
+.diary-data{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .5rem;
+    align-self: center;
+    align-items: center;
+    margin-top: 4%;
+    animation: fadeIn 0.4s ease forwards;
+
+   
+    
+    
+}
+.diary-cont > .diary-item:nth-child(even) {
+  background-color: #c2c2c2;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translatex(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+.diary-data-name{
+    margin-left: 10%;
+    font-weight: bold;
+}
+
+.diary-data-muscle{
+    margin-left: 25%;
+}
+.diary-data-type{
+    margin-left: 10%;
+    
+
+}
+
+.diary-data p {
+    color: rgb(42, 42, 42);
+    font-size: 1.2rem;
+}
+

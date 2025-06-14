@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
-import { Navbar } from "../../navbar/navbar";
+import { Navbar } from "../../Navbar/navbar";
 import { useNavigate } from "react-router-dom";
 
 
@@ -58,8 +58,8 @@ useEffect(()=>{
     return(
         <>
             <div className="profile-container">
-
-            <h1>Szia {userName}!</h1>
+            <Navbar />
+            <h1 style={{marginTop:"20px"}}>Szia {userName}! </h1>
 
 
             
