@@ -1,5 +1,6 @@
 import { useEffect, useState} from "react";
 import axios from "axios";
+import { Diagrams } from "./Diagrams";
 import {
   Chart as ChartJS, //Grafiaki Monitor
   LineElement, //Maga a vonal
@@ -11,7 +12,7 @@ import {
   defaults,
   TimeScale
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+
 import "./getDiaryDetails.css"
 import 'chartjs-adapter-date-fns';
 
@@ -59,110 +60,38 @@ export const GetDiaryDetail = ( {exer_id, refresh_key}) => {
       
         LoadProgression();
       }, [exer_id, refresh_key ]);
-
       const groupedLogs = {
-        3: logs.filter((item) => item.rep === 3),
-        6: logs.filter((item) => item.rep === 6),
-        8: logs.filter((item) => item.rep === 8),
-        12: logs.filter((item) => item.rep === 12),
+        "pr": logs.filter((item) => item.rep <= 2),
+        "3-4": logs.filter((item) => item.rep === 3 || item.rep === 4),
+        "5-6": logs.filter((item) => item.rep === 6 || item.rep === 5),
+        "7-8": logs.filter((item) => item.rep === 8 || item.rep === 7),
+        "9-10": logs.filter((item) => item.rep === 9 || item.rep === 10),
+        "11 +": logs.filter((item) => item.rep >= 11),
       };
 
-
- 
-      
-
-
- 
-
-
-   
-    
     return(
         
         logs.length === 0 ?(
             <p>Még nincs nalpó</p> 
 
-        ):(  <div className="exer-diagram">
-    
- <Line
- data={{
-   datasets: [
-     {
-       label: "Súly 6 ismétlésnél",
-       data: groupedLogs[6].map(item => ({ x: item.date, y: item.weight })),
-       borderColor: "#00bcd4",
-       backgroundColor: "#00bcd4"
-     }
-   ]
- }}
-
-      options = {{
-        scales: {
-          x:{
-            type: 'time',
-            time: {
-                unit: "day",
-                tooltipFormat: "yyyy-MM-dd HH:mm",
-                displayFormats: {
-                  minute: "HH:mm",
-                  hour: "MMM d HH:mm",
-                  day: "yyyy-MM-dd"
-
-                }
-
-            },
-            ticks:{
-              color: "969393",
-              maxRotation: 90,
-              minRotation: 70,
-            },
-            grid: {
-              color:"#303030"
-            },
-            title:{
-              display: true,
-              text: "Dátum ",
-              color:"969393",
-              font :{
-                weight: "bold",
-                size: "15"
-
-              }
+        ):( 
 
 
-            }
-          },
-          y: {
-            ticks: {
-              color: "969393"
-
-
-            },
-            grid: {
-              color: "#303030"
-            }
-
-          }
-
-
-        },
-        elements: {
-          line: {
-            tension: 0.3
-
-          }
-
-        }
-
-      }}
-    />
-  </div>
+           <div className="exer-diagram">
+            <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>1 Ismétléses Rekord</h1>
+            <Diagrams title = "PR" logs={groupedLogs["pr"]} />
+            <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>3-4 közti ismétlés tartomány</h1>
+            <Diagrams title = "3-4 ismétlés közt" logs={groupedLogs["3-4"]}/>
+            <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>5-6 közti ismétlés tartomány</h1>
+            <Diagrams  title = "5-6 ismétlés közt" logs={groupedLogs["5-6"]}/>
+            <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>7-8 közti ismétlés tartomány</h1>
+            <Diagrams  title = "7-8 ismétlés közt" logs={groupedLogs["7-8"]}/>
+            <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>9-10 közti ismétlés tartomány</h1>
+            <Diagrams  title = "9-10 ismétlés közt" logs={groupedLogs["9-10"]}/>
+            <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>11 és a feletti ismétlés tartomány</h1>
+            <Diagrams  title = "11-nél Több ismétlés" logs={groupedLogs["11 +"]}/>
+            </div>
 
         )
-            
-    
-    
     )
-
-
 }

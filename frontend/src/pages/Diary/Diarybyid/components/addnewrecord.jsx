@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import "./addnewrecord.css"
 
 export const AddNewRecord = ({ exerName, exer_id, triggerRefresh}) => { 
     const [weight, setWeight] = useState("")
@@ -8,7 +9,8 @@ export const AddNewRecord = ({ exerName, exer_id, triggerRefresh}) => {
     
 
 
-    const handleNewRecord = async() => { 
+    const handleNewRecord = async(e) => {
+         e.preventDefault();
         try{
         const response = await axios.post("http://localhost:8000/diary/add-new-record", {
             exer_id,
@@ -35,7 +37,9 @@ export const AddNewRecord = ({ exerName, exer_id, triggerRefresh}) => {
 
      return(
         <>
-           <form action="">
+
+        <div className="add-record-container">
+           <form onSubmit={handleNewRecord}>
            <input
                     type="number"
                     min="1"
@@ -45,7 +49,7 @@ export const AddNewRecord = ({ exerName, exer_id, triggerRefresh}) => {
                     placeholder="súly"
                     onChange={e => setWeight(e.target.value)}
                     />
-            <br />
+            
 
             <input
                     type="number"
@@ -56,12 +60,12 @@ export const AddNewRecord = ({ exerName, exer_id, triggerRefresh}) => {
                     placeholder="ismétlés"
                     onChange={e => setReps(e.target.value)}
                     />
-                    <br />
+                  
             
-            <button type="button" onClick={handleNewRecord}>Naplózás</button>
-
+            <button type="submit" >Naplózás</button>
+           
            </form>
-
+        </div>
         </>
 
      )

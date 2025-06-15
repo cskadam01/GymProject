@@ -1,0 +1,38 @@
+.add-record-container{
+    display:flex;
+    justify-content: center;
+    margin-top: 10%;
+    margin-bottom: 10%;
+    
+}
+
+.add-record-container input, button {
+    padding: 10px;
+    margin-left: 40px;
+    border-style: none;
+    
+}
+
+.add-record-container input{
+    border-radius: 8px;
+    width: 110px;
+    color: white;
+
+}
+
+.add-record-container input::placeholder{
+    color: black;
+}
+
+.add-record-container input:focus{
+    outline: none;
+
+}
+.add-record-container button{
+    margin-top: 30px;
+    width: 77%;
+    border: solid black 1px;
+    background-color:rgb(82, 82, 82);
+    color: white;
+    border-radius: 8px;
+}

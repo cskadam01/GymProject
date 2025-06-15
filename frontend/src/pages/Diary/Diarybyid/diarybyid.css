@@ -1,5 +1,6 @@
 .diary-by-id-cont{
     height: 100vh;
+    overflow: scroll;
     background: #0f0f0f;
     background: -webkit-linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
     background: -moz-linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);

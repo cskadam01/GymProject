@@ -3,7 +3,9 @@ import { useParams } from "react-router-dom";
 import { AddNewRecord } from "./components/addnewrecord";
 import { GetDiaryDetail } from "./components/getDiaryDetails";
 import axios from "axios";
-import "./diarybyid.css"
+import "./diarybyid.css";
+import { Navbar } from "../../../Navbar/navbar";
+
 
 export const OpenedExer = () => {
     const [exerName, setExerName] = useState("")
@@ -58,7 +60,10 @@ export const OpenedExer = () => {
 
         
         <>
+
+        <Navbar/>
         <div className="diary-by-id-cont">
+            <h1 style={{textAlign:'center', marginTop:"10%", color:'white', fontSize:"3rem"}}>{exerName}</h1>
         <AddNewRecord exerName={exerName} exer_id={id} triggerRefresh = {()=> setRefresh(prev => prev + 1)}/>
 
             
