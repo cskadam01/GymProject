@@ -1,0 +1,12 @@
+.diary-by-id-cont{
+    height: 100vh;
+    background: #0f0f0f;
+    background: -webkit-linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
+    background: -moz-linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
+    background: linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(
+    startColorstr="#0F0F0F",
+    endColorstr="#3B3B3B",
+    GradientType=0
+    );
+}

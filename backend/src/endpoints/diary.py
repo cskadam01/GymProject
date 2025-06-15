@@ -36,7 +36,12 @@ def get_saved_exer(current_user: dict = Depends(get_current_user)):
             if doc.exists:
                 data = doc.to_dict()
                 data["id"] = doc.id
+                
                 saves.append(data)
+
+                
+
+        
         
         
 
@@ -78,7 +83,24 @@ def get_diary_entries_by_exercise(exercise_id: str = Query(...), current_user : 
     if not docs:
         raise HTTPException(status_code=404, detail="Nincs ilyen feladatod naplózva.")
     
-    return [{"id": doc.id, **doc.to_dict()} for doc in docs]
+    saves = []
+
+    for doc in docs:
+        data = doc.to_dict()
+        data["id"] = doc.id
+        saves.append(data)
+
+    # ✅ rendezés az eredeti datetime alapján (mert data["date"] az)
+    saves.sort(key=lambda x: x["date"])
+
+# 🕒 csak ezután formázod stringgé
+
+      
+    
+    return saves
+    
+
+
 
 @router.get("/is-authorized")
 def is_exercise_authorized(exercise_id: str = Query(...), current_user: dict = Depends(get_current_user)):

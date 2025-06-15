@@ -7,15 +7,24 @@ import {
   CategoryScale, //X tengely típus
   LinearScale, //Y tengely típus
   Tooltip, //buborék
-  Legend //Szín Magyarázat
+  Legend, //Szín Magyarázat
+  defaults,
+  TimeScale
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import "./getDiaryDetails.css"
+import 'chartjs-adapter-date-fns';
+
+
+defaults.maintainAspectRatio= false;
+defaults.responsive = true;
 
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   LineElement,
+  TimeScale,
   PointElement,
   Tooltip,
   Legend
@@ -51,37 +60,20 @@ export const GetDiaryDetail = ( {exer_id, refresh_key}) => {
         LoadProgression();
       }, [exer_id, refresh_key ]);
 
+      const groupedLogs = {
+        3: logs.filter((item) => item.rep === 3),
+        6: logs.filter((item) => item.rep === 6),
+        8: logs.filter((item) => item.rep === 8),
+        12: logs.filter((item) => item.rep === 12),
+      };
+
 
  
       
 
 
-  const formatDate = (dateStr) =>
-  new Date(dateStr).toLocaleString('hu-HU', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+ 
 
-const chartData = {
-  datasets: [
-    {
-      label: 'Súly (kg)',
-      data: logs.map((item) => ({
-        x: formatDate(item.date), // emberi olvasható dátum + idő
-        y: item.weight,
-        rep: item.rep,
-      })),
-      borderColor: 'rgb(223, 223, 223)',
-      backgroundColor: 'rgb(43, 43, 43)',
-      tension: 0.3,
-      pointRadius: 5,
-      pointHoverRadius: 7,
-    }
-  ]
-};
 
    
     
@@ -90,52 +82,78 @@ const chartData = {
         logs.length === 0 ?(
             <p>Még nincs nalpó</p> 
 
-        ):(  <div style={{ maxWidth: '600px', margin: '2rem auto' }}>
-    <Line
-      data={chartData}
-      options={{
-        responsive: true,
-        plugins: {
-          tooltip: {
-            callbacks: {
-              // Ez fut le, ha ráviszed az egeret egy pontra
-              label: function (context) {
-                const rep = context.raw.rep; // a 'rep' mező az adatobjektumból
-                const weight = context.raw.y;
-                return `Súly: ${weight} kg – Ismétlés: ${rep}x`;
-              }
-            }
-          },
-          legend: {
-            labels: {
-              color: '#333', // szövegszín (opcionális)
-            }
-          }
-        },
+        ):(  <div className="exer-diagram">
+    
+ <Line
+ data={{
+   datasets: [
+     {
+       label: "Súly 6 ismétlésnél",
+       data: groupedLogs[6].map(item => ({ x: item.date, y: item.weight })),
+       borderColor: "#00bcd4",
+       backgroundColor: "#00bcd4"
+     }
+   ]
+ }}
+
+      options = {{
         scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 10, // pl. 10 kilónként
+          x:{
+            type: 'time',
+            time: {
+                unit: "day",
+                tooltipFormat: "yyyy-MM-dd HH:mm",
+                displayFormats: {
+                  minute: "HH:mm",
+                  hour: "MMM d HH:mm",
+                  day: "yyyy-MM-dd"
+
+                }
+
             },
-            title: {
+            ticks:{
+              color: "969393",
+              maxRotation: 90,
+              minRotation: 70,
+            },
+            grid: {
+              color:"#303030"
+            },
+            title:{
               display: true,
-              text: 'Súly (kg)'
+              text: "Dátum ",
+              color:"969393",
+              font :{
+                weight: "bold",
+                size: "15"
+
+              }
+
+
             }
           },
-                      x: {
-              title: {
-                display: true,
-                text: 'Dátum és időpont'
-              },
-              ticks: {
-                maxRotation: 45,
-                minRotation: 45,
-                autoSkip: false
-              }
+          y: {
+            ticks: {
+              color: "969393"
+
+
+            },
+            grid: {
+              color: "#303030"
             }
 
+          }
+
+
+        },
+        elements: {
+          line: {
+            tension: 0.3
+
+          }
+
         }
+
       }}
     />
   </div>
