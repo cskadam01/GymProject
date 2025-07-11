@@ -63,7 +63,7 @@ export const OpenedExer = () => {
 
         <Navbar/>
         <div className="diary-by-id-cont">
-            <h1 style={{textAlign:'center', marginTop:"10%", color:'white', fontSize:"3rem"}}>{exerName}</h1>
+            <h1 style={{textAlign:'center', marginTop:"10%", fontSize:"3rem"}}>{exerName}</h1>
         <AddNewRecord exerName={exerName} exer_id={id} triggerRefresh = {()=> setRefresh(prev => prev + 1)}/>
 
             

@@ -1,13 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Goldman:wght@400;700&display=swap');
+
+
 .diary-by-id-cont{
     height: 100vh;
     overflow: scroll;
-    background: #0f0f0f;
-    background: -webkit-linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
-    background: -moz-linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
-    background: linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(
-    startColorstr="#0F0F0F",
-    endColorstr="#3B3B3B",
-    GradientType=0
-    );
+    background: #0e0e11;
+
+}
+
+.diary-by-id-cont h1{
+    font-family: "Goldman";
+    font-weight: 300;
+    color: #4b0ccb;
 }

@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Goldman:wght@400;700&display=swap');
+
+
+.exer-container{
+    background: #0e0e11;
+
+   
+        min-height: 100vh;
+        overflow-y: auto; /* vagy hagyd el, ha az egész oldal scrolloz */
+        position: relative; /* vagy semmi */
+    
+    
+
+}
+.exer-cont{
+    padding-bottom: 7rem;
+
+
+
+}
+.exer-list {
+    background-color:#18181b;
+    margin-bottom: 10px;
+    margin-top: 30px;
+    position: relative;
+    border-style: none;
+    width: 95%;
+    margin-left: 2.5%;
+    border-radius: 8px;
+    border: 1px #242429 solid;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: azure;
+    
+}
+
+.browse-name{
+    margin-left: 4%;
+    font-family: "Goldman";
+    color: #5b0ff2;
+    font-weight: 300;
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+
+
+}
+
+.browse-muscle{
+    margin-left: 5%;
+    
+
+
+}
+.browse-desc{
+    margin-left: 5%;
+}
+.browse-type{
+    margin-left: 5%;
+}
+.browse-isSaved{
+    margin-left: 5%;
+}
+.exer-button-dis, .exer-button-active{
+    margin-top: 10px;
+    margin-left: 5%;
+    padding: 6px 20px 6px 20px;
+    border: none;
+    border-radius: 4px;
+}
+
+.exer-button-dis{
+    background-color: #967bff;
+
+}
+
+.exer-button-active{
+    background-color: #7946ff;
+
+
+
+}
+

@@ -115,6 +115,26 @@ def is_exercise_authorized(exercise_id: str = Query(...), current_user: dict = D
     return {"authorized": False}
     
     
+@router.delete("/delete/{entry_id}")
+def delete_diary_entry(entry_id: str, current_user: dict = Depends(get_current_user)):
+    try:
+        # Lekérdezzük a bejegyzést
+        doc_ref = db.collection("diary_entries").document(entry_id)
+        doc = doc_ref.get()
+
+        if not doc.exists:
+            raise HTTPException(status_code=404, detail="Naplóbejegyzés nem található")
+
+        # Ellenőrizzük, hogy a bejegyzés a jelenlegi felhasználóhoz tartozik-e
+        if doc.to_dict().get("user") != current_user["name"]:
+            raise HTTPException(status_code=403, detail="Nincs jogosultságod ezt törölni")
+
+        # Törlés
+        doc_ref.delete()
+        return {"message": "Sikeresen törölve"}
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Törlés sikertelen: {e}")
 
 
     

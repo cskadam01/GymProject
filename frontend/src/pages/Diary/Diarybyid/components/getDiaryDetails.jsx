@@ -79,17 +79,17 @@ export const GetDiaryDetail = ( {exer_id, refresh_key}) => {
 
            <div className="exer-diagram">
             <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>1 Ismétléses Rekord</h1>
-            <Diagrams title = "PR" logs={groupedLogs["pr"]} />
+            <Diagrams title = "PR" logs={groupedLogs["pr"] } triggerRefresh={() => setRefreshKey(prev => prev + 1)}  />
             <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>3-4 közti ismétlés tartomány</h1>
-            <Diagrams title = "3-4 ismétlés közt" logs={groupedLogs["3-4"]}/>
+            <Diagrams title = "3-4 ismétlés közt" logs={groupedLogs["3-4"]} triggerRefresh={() => setRefreshKey(prev => prev + 1)} />
             <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>5-6 közti ismétlés tartomány</h1>
-            <Diagrams  title = "5-6 ismétlés közt" logs={groupedLogs["5-6"]}/>
+            <Diagrams  title = "5-6 ismétlés közt" logs={groupedLogs["5-6"]} triggerRefresh={() => setRefreshKey(prev => prev + 1)} />
             <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>7-8 közti ismétlés tartomány</h1>
-            <Diagrams  title = "7-8 ismétlés közt" logs={groupedLogs["7-8"]}/>
+            <Diagrams  title = "7-8 ismétlés közt" logs={groupedLogs["7-8"]} triggerRefresh={() => setRefreshKey(prev => prev + 1)} />
             <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>9-10 közti ismétlés tartomány</h1>
-            <Diagrams  title = "9-10 ismétlés közt" logs={groupedLogs["9-10"]}/>
+            <Diagrams  title = "9-10 ismétlés közt" logs={groupedLogs["9-10"]} triggerRefresh={() => setRefreshKey(prev => prev + 1)} />
             <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>11 és a feletti ismétlés tartomány</h1>
-            <Diagrams  title = "11-nél Több ismétlés" logs={groupedLogs["11 +"]}/>
+            <Diagrams  title = "11-nél Több ismétlés" logs={groupedLogs["11 +"]} triggerRefresh={() => setRefreshKey(prev => prev + 1)} />
             </div>
 
         )

@@ -3,6 +3,8 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import "./diary.css"
 import { Navbar } from "../../Navbar/navbar";
+import { RxGear } from "react-icons/rx";
+import { CgGym } from "react-icons/cg";
 
 
 export const Diary = () => {
@@ -44,7 +46,7 @@ export const Diary = () => {
                                 <div className="diary-data">
                                 <p className="diary-data-name">{item.exer_name}</p>
                                 <p className="diary-data-muscle">{item.muscle}</p>
-                                <p className="diary-data-type">{item.type}</p>
+                                {item.type === "Szabadsúly" ? <p className="diary-icon"><CgGym /></p> : <p className="diary-icon"><RxGear /></p>}
                                 
                                 <br />
                                 </div>

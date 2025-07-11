@@ -1,13 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Goldman:wght@400;700&display=swap');
+
+
+
 .diary-conatiner {
-    background: #0f0f0f;
-    background: -webkit-linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
-    background: -moz-linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
-    background: linear-gradient(0deg,rgba(15, 15, 15, 1) 0%, rgba(59, 59, 59, 1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(
-    startColorstr="#0F0F0F",
-    endColorstr="#3B3B3B",
-    GradientType=0
-    );
+    background: #0e0e11;
     height: 100vh;
     width: 100%;
     position:fixed;
@@ -25,8 +21,9 @@
     place-content: center;
     align-content: center;
     border-style: none;
-    background-color: #f1f1f1;
-    box-shadow: 0 2px 5px rgba(220, 220, 220, 0.2);
+    background-color: #18181b;
+    color: aliceblue;
+    border: #242429 1px solid;
     border-radius: 8px;
     transition:  .5s ease-in-out;
     width: 95%;
@@ -49,20 +46,18 @@
 
 .diary-data{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 5fr 1fr auto;
     gap: .5rem;
     align-self: center;
     align-items: center;
-    margin-top: 4%;
+    margin-top: 1.2%;
     animation: fadeIn 0.4s ease forwards;
 
    
     
     
 }
-.diary-cont > .diary-item:nth-child(even) {
-  background-color: #c2c2c2;
-}
+
 
 
 @keyframes fadeIn {
@@ -72,22 +67,37 @@
 
 
 
-.diary-data-name{
-    margin-left: 10%;
-    font-weight: bold;
-}
+
 
 .diary-data-muscle{
-    margin-left: 25%;
-}
-.diary-data-type{
-    margin-left: 10%;
     
-
+    color: #dcdcdc;
 }
 
-.diary-data p {
-    color: rgb(42, 42, 42);
-    font-size: 1.2rem;
+
+.diary-item a {
+    color: inherit;
+    text-decoration: none;
+  }
+  
+
+
+.diary-data-name{
+    margin-left: 15px;
+    
+    font-family: "Goldman";
+    font-weight: 400;
+    font-size: 0.9rem;
+    color: aliceblue;
+    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+.diary-icon {
+    color: #442c7d;
+    font-size: 1.6rem;
+    font-weight: bold;
+    justify-self: end; /* Ez a fontos! */
+    margin-right: 15px;
+  }

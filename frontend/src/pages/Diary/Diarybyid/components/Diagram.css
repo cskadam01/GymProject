@@ -1,16 +1,44 @@
 .diagram-container{
 
-    background-color: rgb(67, 67, 67);
+    background-color: #202026;
     margin-bottom: 30px;
     width: 80%;
     padding: 5%;
     margin-left: 5%;
     border-radius: 15px;
     height: 350px;
-    -webkit-box-shadow:18px 17px 39px 5px rgba(34, 34, 34, 0.413);
--moz-box-shadow: 18px 17px 39px 5px rgba(62,66,66,0.27);
-box-shadow: 18px 17px 39px 5px rgba(62,66,66,0.27);
-        
-
+    border:#242429 1px solid;
 
 }
+
+.selected-log-box {
+    position: relative; /* vagy absolute, ha máshoz szeretnéd igazítani */
+    z-index: 10;
+    background-color: #1a1a1f;
+    border: 1px solid #442c7d;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    color: white;
+    text-align: center;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  
+  .selected-log-box button {
+    background-color: #442c7d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .selected-log-box button:hover {
+    background-color: #5e3db1;
+  }
+  
