@@ -79,7 +79,7 @@ def login(user: LoginUser, response: Response):
         value=token,          # A süti tartalma maga a JWT token
         httponly=True,        # Ne legyen elérhető JavaScriptből → XSS elleni védelem
         secure=True,         # Fejlesztéshez jó így, élesben legyen True (csak HTTPS)
-        samesite="lax",       # Csak közvetlen böngészős interakció esetén küldi el a süti → CSRF ellen
+        samesite="none",       # Csak közvetlen böngészős interakció esetén küldi el a süti → CSRF ellen
         max_age=3600 * 3      # Mennyi idő után járjon le
     )
 
