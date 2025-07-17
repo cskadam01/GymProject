@@ -60,7 +60,7 @@ def get_current_user(request: Request, response: Response):
                 key = "access_token",
                 value = new_token,
                 httponly=True,
-                secure = False,
+                secure = True,
                 samesite= "lax",
                 max_age= 3600*3
 

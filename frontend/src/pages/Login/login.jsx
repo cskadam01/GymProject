@@ -15,7 +15,7 @@ export const Login = () => {
 
     const HandleLogin = async (e) => {
         try {
-            const response = await axios.post("http://localhost:8000/users/login",
+            const response = await axios.post("https://gymproject-gpdz.onrender.com/users/login",
                 {
                     name,
                     password

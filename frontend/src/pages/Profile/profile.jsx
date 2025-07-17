@@ -35,7 +35,7 @@ useEffect(()=>{
 
    const getUser = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/users/me", {
+      const response = await axios.get("https://gymproject-gpdz.onrender.com/users/me", {
         withCredentials: true
       });
       setUserName(response.data.user);
