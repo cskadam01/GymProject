@@ -9,7 +9,7 @@ import { Navbar } from "../../../Navbar/navbar";
 
 export const OpenedExer = () => {
     const [exerName, setExerName] = useState("")
-    const { id } = useParams();
+    const { id } = useParams(); //Ezzel ki tudjuk szedni a linkből az id-t
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(true);
     const [isValid, setIsValid] = useState(null);
@@ -21,16 +21,16 @@ export const OpenedExer = () => {
                     const Validate = await axios.get(
                         "http://localhost:8000/diary/is-authorized",
                         {
-                        params: { exercise_id: id },
+                        params: { exercise_id: id }, //a headbe kerül, az id, aamit szeretnénk lekérdezni hogy a felhasználó rendelkezik e vele
                         withCredentials: true,
                         }
                     );
 
-                    const allowed = Validate.data.authorized;
+                    const allowed = Validate.data.authorized; //Ha  benne van a felhasználónak a listájában a feladat akkor True-t kapunk vissza 
                     console.log("Authorization válasz:", Validate.data);
 
                     if (allowed) {
-                        const response = await axios.get(`http://localhost:8000/exercise/exer/${id}`);
+                        const response = await axios.get(`http://localhost:8000/exercise/exer/${id}`); //a linkből kiszedjük az id-t és betesszük ide a linkbe
                         setExerName(response.data.exer_name);
                         setIsValid(true); // ✅ csak akkor állítjuk true-ra, ha minden adat megvan
                     } else {
@@ -49,7 +49,7 @@ export const OpenedExer = () => {
 
     if (loading || isValid === null) return <p>Töltés...</p>;
 
-    if(isValid === false){return <p>Nem naplózott feladatot próbálsz meg elérni</p>} 
+    if(isValid === false){return <p style={{color:"white"}}>Nem naplózott feladatot próbálsz meg elérni</p>} 
 
     
 

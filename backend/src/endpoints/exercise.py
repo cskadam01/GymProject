@@ -21,7 +21,7 @@ class ExerId(BaseModel):
     exerciseID : str
 
 
-
+#------------------- ITT TALÁLHATÓAK A FELADATOKKAL KAPCSOLATOS ENDPOINTOK -------------------------
 
 @router.post("/save-to-diary")
 

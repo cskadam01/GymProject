@@ -15,6 +15,9 @@ router = APIRouter(
 )
 
 
+#------------------- ITT TALÁLHATÓAK AZ AUTENTIKÁCÓ ÉS FELHASZNÁLÓKKAL KAPCSOLATOS ENDPOINTOK -------------------------
+
+
 
 class LoginUser(BaseModel):
     name: str

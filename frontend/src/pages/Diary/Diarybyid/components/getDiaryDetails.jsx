@@ -72,11 +72,11 @@ export const GetDiaryDetail = ( {exer_id, refresh_key}) => {
     return(
         
         logs.length === 0 ?(
-            <p>Még nincs nalpó</p> 
+            <p style={{color:"white"}}>Még nincs nalpó</p> 
 
         ):( 
 
-
+            //----------------------Diagram Komponensek Létrehozása Ismétlésszám Alapján ----------------------
            <div className="exer-diagram">
             <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>1 Ismétléses Rekord</h1>
             <Diagrams title = "PR" logs={groupedLogs["pr"] } triggerRefresh={() => setRefreshKey(prev => prev + 1)}  />

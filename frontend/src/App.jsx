@@ -10,33 +10,53 @@ import { BrowseExercises } from "./pages/BrowseExercises/browseExercises";
 import { Diary } from "./pages/Diary/diary";
 import { OpenedExer } from "./pages/Diary/Diarybyid/diarybyid";
 import { LandingPage } from "./pages/Landing/LandingPage";
+import { AuthWrapper } from "./AuthWrapper";
 
 function App() {
-    return(
-        <>
-        <Router>
-            <Routes>
-            <Route path="/" element={<LandingPage/>}/>
-            <Route path="/login" element={<Login/>}/>
-            <Route path="/register" element={<Register/>}/>
-            <Route path="/profile" element={<Profile/>}/>
-            <Route path="/browse-exercises" element={<BrowseExercises/>}/>
-            <Route path="/diary" element={<Diary/>}/>
-            <Route path="/diary/:id" element={<OpenedExer />} />
+  return (
+    <Router>
+      <Routes>
+        {/* Nyilvános route-ok */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-
-           
-            
-            </Routes>
-
-
-        </Router>
-            
-        
-        </>
-
-
-    )
-
+        {/* Védett route-ok AuthWrapperrel */}
+        <Route
+          path="/profile"
+          element={
+            <AuthWrapper>
+              <Profile />
+            </AuthWrapper>
+          }
+        />
+        <Route
+          path="/browse-exercises"
+          element={
+            <AuthWrapper>
+              <BrowseExercises />
+            </AuthWrapper>
+          }
+        />
+        <Route
+          path="/diary"
+          element={
+            <AuthWrapper>
+              <Diary />
+            </AuthWrapper>
+          }
+        />
+        <Route
+          path="/diary/:id"
+          element={
+            <AuthWrapper>
+              <OpenedExer />
+            </AuthWrapper>
+          }
+        />
+      </Routes>
+    </Router>
+  );
 }
-export default App
+
+export default App;

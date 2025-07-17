@@ -3,11 +3,13 @@ import axios from "axios";
 import "./navbar.css"
 import { Link } from 'react-router-dom';
 import { RxHamburgerMenu } from "react-icons/rx";
+import { useNavigate } from "react-router-dom";
 
 
 export const Navbar =() => {
 
     const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate()
 
    
         const HandleLogout = async () => {
@@ -16,6 +18,8 @@ export const Navbar =() => {
         
 
         console.log("kijelentkezve:",response.data);
+        navigate("/login")
+        
     
         }
         catch (err){

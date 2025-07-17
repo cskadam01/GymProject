@@ -99,18 +99,20 @@ def get_diary_entries_by_exercise(exercise_id: str = Query(...), current_user : 
     
     return saves
     
+#------------------- ITT TALÁLHATÓAK A NAPLÓZÁSSAL KAPCSOLATOS ENDPOINTOK -------------------------
 
 
 
 @router.get("/is-authorized")
-def is_exercise_authorized(exercise_id: str = Query(...), current_user: dict = Depends(get_current_user)):
+def is_exercise_authorized(exercise_id: str = Query(...), #A Querry miatt kötelező paraméter lesz
+                           current_user: dict = Depends(get_current_user)):
     
     
     docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
 
     saved_ids = docs[0].to_dict().get("saved_exercises", [])
 
-    if exercise_id in saved_ids:
+    if exercise_id in saved_ids: #Megnézzük hogy a frontendről érkezett id benne van e a felhasználó által mentett idk listájában
             return {"authorized": True}
     return {"authorized": False}
     

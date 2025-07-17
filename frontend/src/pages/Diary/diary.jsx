@@ -37,12 +37,13 @@ export const Diary = () => {
             <div className="diary-conatiner">
                 <div className="diary-cont">
                 {diary.length === 0 ? (
-                    <p>Napló üres</p>             
+                    <p style={{color:"white"}}>Napló üres</p>             
 
                 ) : (
                     diary.map((item) => (
                         <div className="diary-item" key={item.id}>
-                            <Link to={`/diary/${item.id}`} key={item.id} style={{textDecoration:"none"}}>
+                            
+                            <Link to={`/diary/${item.id}`} style={{textDecoration:"none"}}>   {/* Beadjuk, hogy a választott linkre vigye tovább a felhasználót az id alapján */}
                                 <div className="diary-data">
                                 <p className="diary-data-name">{item.exer_name}</p>
                                 <p className="diary-data-muscle">{item.muscle}</p>
