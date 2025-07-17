@@ -41,7 +41,7 @@ export const Register = () => {
 
 
             try {
-                const response = await axios.post("http://localhost:8000/users/register",
+                const response = await axios.post("https://gymproject-gpdz.onrender.com/users/register",
 
                     {
                         name,

@@ -41,7 +41,7 @@ export const GetDiaryDetail = ( {exer_id, refresh_key}) => {
         const LoadProgression = async () => {
           try {
             const response = await axios.get(
-              `http://localhost:8000/diary/by-exercise?exercise_id=${exer_id}`,
+              `https://gymproject-gpdz.onrender.com/diary/by-exercise?exercise_id=${exer_id}`,
               { withCredentials: true }
             );
             setLogs(response.data);

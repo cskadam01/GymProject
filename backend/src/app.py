@@ -18,7 +18,8 @@ app.add_middleware(
     CORSMiddleware,
         allow_origins=[
         "https://gymproject-gpdz.onrender.com",
-        "http://localhost:5173"
+        "http://localhost:5173",
+        "https://gymdatabase-129e2.web.app"
     ],
   # vagy a saját domained
     allow_credentials=True,  # ⬅⬅⬅ FONTOS: kell a sütikhez!

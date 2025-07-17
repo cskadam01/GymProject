@@ -15,7 +15,7 @@ export const Diary = () => {
             try {
                
 
-                const response = await axios.get("http://localhost:8000/diary/user-diary",
+                const response = await axios.get("https://gymproject-gpdz.onrender.com/diary/user-diary",
                     { withCredentials: true })
 
                 setDiary(response.data)

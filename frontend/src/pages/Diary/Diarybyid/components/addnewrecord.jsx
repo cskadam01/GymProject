@@ -12,7 +12,7 @@ export const AddNewRecord = ({ exerName, exer_id, triggerRefresh}) => {
     const handleNewRecord = async(e) => {
          e.preventDefault();
         try{
-        const response = await axios.post("http://localhost:8000/diary/add-new-record", {
+        const response = await axios.post("https://gymproject-gpdz.onrender.com/add-new-record", {
             exer_id,
             exerName,
             weight,

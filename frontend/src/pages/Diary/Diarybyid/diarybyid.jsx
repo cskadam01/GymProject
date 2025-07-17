@@ -19,7 +19,7 @@ export const OpenedExer = () => {
                 const GetExerByID = async () => {
                     try {
                     const Validate = await axios.get(
-                        "http://localhost:8000/diary/is-authorized",
+                        "https://gymproject-gpdz.onrender.com/diary/is-authorized",
                         {
                         params: { exercise_id: id }, //a headbe kerül, az id, aamit szeretnénk lekérdezni hogy a felhasználó rendelkezik e vele
                         withCredentials: true,
@@ -30,7 +30,7 @@ export const OpenedExer = () => {
                     console.log("Authorization válasz:", Validate.data);
 
                     if (allowed) {
-                        const response = await axios.get(`http://localhost:8000/exercise/exer/${id}`); //a linkből kiszedjük az id-t és betesszük ide a linkbe
+                        const response = await axios.get(`https://gymproject-gpdz.onrender.com/exercise/exer/${id}`); //a linkből kiszedjük az id-t és betesszük ide a linkbe
                         setExerName(response.data.exer_name);
                         setIsValid(true); // ✅ csak akkor állítjuk true-ra, ha minden adat megvan
                     } else {

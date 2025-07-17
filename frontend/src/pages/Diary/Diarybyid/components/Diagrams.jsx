@@ -134,7 +134,7 @@ export const Diagrams = ({title, logs, triggerRefresh}) => {
   onConfirm={() => {
     axios
     axios
-    .delete(`http://localhost:8000/diary/delete/${selectedLog.id}`, {
+    .delete(`https://gymproject-gpdz.onrender.com/diary/delete/${selectedLog.id}`, {
       withCredentials: true,
     })
       .then(() => {

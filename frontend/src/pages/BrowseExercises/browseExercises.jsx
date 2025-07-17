@@ -16,7 +16,7 @@ export const BrowseExercises = () => {
     useEffect(() => {
         const GetAllExercise = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/exercise/get-all-exercise",
+                const response = await axios.get("https://gymproject-gpdz.onrender.com/exercise/get-all-exercise",
                     {
 
                         withCredentials: true
@@ -43,7 +43,7 @@ export const BrowseExercises = () => {
 
     const addToDiary = async (exerciseID) => {
         try {
-            const response = await axios.post("http://localhost:8000/exercise/save-to-diary", {
+            const response = await axios.post("https://gymproject-gpdz.onrender.com/diary/save-to-diary", {
                 exerciseID
             },
                 {
