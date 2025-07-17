@@ -17,8 +17,6 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
         allow_origins=[
-        "https://gymproject-gpdz.onrender.com",
-        "http://localhost:5173",
         "https://gymdatabase-129e2.web.app"
     ],
   # vagy a saját domained
