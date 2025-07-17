@@ -52,7 +52,7 @@ export const Diagrams = ({title, logs, triggerRefresh}) => {
     datasets: [
       {
         label: title,
-        data: logs.map((item) => ({ x: new Date(item.date), y: item.weight })),
+        data: logs.map((item) => ({ x: new Date(item.date), y: item.weight })), //adtok megadás, hogy mit szeretnénk megjeleníteni
         borderColor: "#987bff",
         backgroundColor: 'hsla(260, 100%, 50%, 0.1)',
         tension: 0.5,
@@ -72,9 +72,7 @@ export const Diagrams = ({title, logs, triggerRefresh}) => {
           setSelectedLog(clickedPoint);
 
         }
-        else {
-          setSelectedLog(null); // <== ha nem kattintottál pontra, akkor törli
-        }
+       
       },
     scales: {
       x: {

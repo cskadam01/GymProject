@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
+#---------------------------------- Adatbézishoz kapcsolódás ----------------------------------
 firebase_key = os.getenv("FIREBASE_KEY_PATH")
 
 cred = credentials.Certificate(firebase_key)

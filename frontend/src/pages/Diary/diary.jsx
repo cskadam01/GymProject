@@ -37,7 +37,7 @@ export const Diary = () => {
             <div className="diary-conatiner">
                 <div className="diary-cont">
                 {diary.length === 0 ? (
-                    <p>Napló üres</p>
+                    <p>Napló üres</p>             
 
                 ) : (
                     diary.map((item) => (

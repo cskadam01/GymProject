@@ -67,9 +67,9 @@ def get_all_exercise(current_user: dict = Depends(get_current_user)):
 
         # 4. Végigmegyünk az összes feladaton, és megnézzük, el van-e mentve
         for i in docs:
-            data = i.to_dict()
-            data["id"] = i.id
-            data["saved"] = data["id"] in saved
+            data = i.to_dict() #minden json objektumot doc-á alakítunk és betesszük a data változóba
+            data["id"] = i.id # a data "id" kulcshoz hozzá rendeljük a firebase id-t mivel ez alapból nincs benne
+            data["saved"] = data["id"] in saved # ami benne van a saved feladatokban azokat hozzá tesszük a "saved kulcshoz" 
             exercises.append(data)
 
         return exercises

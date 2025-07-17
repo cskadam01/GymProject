@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from 'axios';
 import { Navbar } from "../../Navbar/navbar";
 import { useNavigate } from "react-router-dom";
+import { ProfileHeader } from "./components/profile_header/profileHeader";
+import { ProfileBody } from "./components/profile_body/profile_body";
 
 
 
@@ -57,16 +59,14 @@ useEffect(()=>{
     
     return(
         <>
-            <div className="profile-container">
+            <div className="profile-container" style={{ height:"100vh", background:"#0e0e11", overflow:"scroll"}}>
             <Navbar />
-            <h1 style={{marginTop:"20px"}}>Szia {userName}! </h1>
+            <div className="profile-content">
+                <ProfileHeader username = {userName}/>
+                <ProfileBody age = {age} email = {email} exercount = {exerCount} />
 
 
-            
-            <p>Email címed: {email}</p>
-            <p>Korod: {age}  </p>
-            <p>Naplózott feladataid száma: {exerCount} </p>
-            <button onClick={HandleLogout}>Kijelentkezés</button>
+            </div>
 
 
             

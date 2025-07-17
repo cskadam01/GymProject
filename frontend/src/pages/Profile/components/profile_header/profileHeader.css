@@ -1,0 +1,21 @@
+.prof-head-container{
+    background-color: #1a1a1f;
+    border: 1px #25252f solid;
+    height: 70px;
+}
+
+.prof-head-cont{
+    display: flex;
+    color: aliceblue;
+    font-size: 1.8rem;
+    margin-left: 30px;
+    margin-top: 23px;
+
+
+}
+
+.prof-head-cont p{
+    margin-left: 20px;
+    font-family: "Goldman";
+    font-weight: 300;
+}
