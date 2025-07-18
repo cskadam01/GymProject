@@ -1,8 +1,9 @@
 import { useState } from "react";
-import axios from "axios";
+
 import "./register.css"
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import axios from "../../instance";
 
 
 export const Register = () => {
@@ -41,7 +42,7 @@ export const Register = () => {
 
 
             try {
-                const response = await axios.post("https://gymproject-gpdz.onrender.com/users/register",
+                const response = await axios.post("/users/register",
 
                     {
                         name,

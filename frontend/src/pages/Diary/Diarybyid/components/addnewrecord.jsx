@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
+import axios from "../../../../instance";
+
 import "./addnewrecord.css"
 
 export const AddNewRecord = ({ exerName, exer_id, triggerRefresh}) => { 
@@ -12,12 +12,12 @@ export const AddNewRecord = ({ exerName, exer_id, triggerRefresh}) => {
     const handleNewRecord = async(e) => {
          e.preventDefault();
         try{
-        const response = await axios.post("https://gymproject-gpdz.onrender.com/add-new-record", {
+        const response = await axios.post("/diary/add-new-record", {
             exer_id,
             exerName,
             weight,
             reps
-        },{withCredentials:true}
+        },
     
     )
 

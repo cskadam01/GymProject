@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import axios from '../../instance';
 import { Navbar } from "../../Navbar/navbar";
 import { useNavigate } from "react-router-dom";
 import { ProfileHeader } from "./components/profile_header/profileHeader";
@@ -16,27 +16,13 @@ export const Profile = () => {
     const [exerCount, setExerCount] = useState('');
     const navigate = useNavigate();
 
-const HandleLogout = async () => {
-        try{
-        const response = await axios.post("http://localhost:8000/users/logout", {}, {withCredentials: true});
-        
-
-        console.log("kijelentkezve:",response.data);
-        navigate("/login")
-    
-        }
-
-
-    catch (err){
-        console.error(err)
-    }};
     
 useEffect(()=>{
 
    const getUser = async () => {
     try {
-      const response = await axios.get("https://gymproject-gpdz.onrender.com/users/me", {
-        withCredentials: true
+      const response = await axios.get("/users/me", {
+        
       });
       setUserName(response.data.user);
       setAge(response.data.age)

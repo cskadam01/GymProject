@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../../instance";
 import { useEffect, useState } from "react";
 import { Navbar } from "../../Navbar/navbar";
 import "./BrowseExercises.css"
@@ -16,11 +16,8 @@ export const BrowseExercises = () => {
     useEffect(() => {
         const GetAllExercise = async () => {
             try {
-                const response = await axios.get("https://gymproject-gpdz.onrender.com/exercise/get-all-exercise",
-                    {
-
-                        withCredentials: true
-                    }
+                const response = await axios.get("/exercise/get-all-exercise",
+                   
                 )
                 if (response.status == 200) {
                     setExercises(response.data)

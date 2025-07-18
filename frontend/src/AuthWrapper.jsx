@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+
 import { useNavigate } from "react-router-dom";
+import axios from "./instance";
 
 export const AuthWrapper = ({ children }) => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export const AuthWrapper = ({ children }) => {
 
 
       try {
-        const response = await axios.get("https://gymproject-gpdz.onrender.com/users/me", {
+        const response = await axios.get("/users/me", {
           headers:{
             Authorization: `Bearer ${token}`,
 

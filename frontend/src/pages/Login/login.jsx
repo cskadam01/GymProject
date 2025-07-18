@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../instance";
 import "./login.css"
 import { Link } from "react-router-dom";
 
@@ -15,7 +15,7 @@ export const Login = () => {
 
     const HandleLogin = async (e) => {
         try {
-            const response = await axios.post("https://gymproject-gpdz.onrender.com/users/login",
+            const response = await axios.post("/users/login",
                 {
                     name,
                     password

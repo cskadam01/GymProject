@@ -1,6 +1,6 @@
 import { useState } from "react";
 import React from "react";
-import axios from "axios";
+import axios from "../../../../instance";
 import { ConfirmDeleteModal } from "./confirm_modal/confirm";
 
 import {
@@ -134,9 +134,7 @@ export const Diagrams = ({title, logs, triggerRefresh}) => {
   onConfirm={() => {
     axios
     axios
-    .delete(`https://gymproject-gpdz.onrender.com/diary/delete/${selectedLog.id}`, {
-      withCredentials: true,
-    })
+    .delete(`/diary/delete/${selectedLog.id}`, )
       .then(() => {
         alert("Sikeresen törölve");
         setSelectedLog(null);

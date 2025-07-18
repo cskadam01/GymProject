@@ -1,5 +1,5 @@
 import { useEffect, useState} from "react";
-import axios from "axios";
+import axios from "../../../../instance";
 import { Diagrams } from "./Diagrams";
 import {
   Chart as ChartJS, //Grafiaki Monitor
@@ -41,8 +41,8 @@ export const GetDiaryDetail = ( {exer_id, refresh_key}) => {
         const LoadProgression = async () => {
           try {
             const response = await axios.get(
-              `https://gymproject-gpdz.onrender.com/diary/by-exercise?exercise_id=${exer_id}`,
-              { withCredentials: true }
+              `/diary/by-exercise?exercise_id=${exer_id}`,
+              
             );
             setLogs(response.data);
           } catch (err) {

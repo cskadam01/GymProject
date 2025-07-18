@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../instance";
 import { Link } from "react-router-dom";
 import "./diary.css"
 import { Navbar } from "../../Navbar/navbar";
@@ -15,8 +15,8 @@ export const Diary = () => {
             try {
                
 
-                const response = await axios.get("https://gymproject-gpdz.onrender.com/diary/user-diary",
-                    { withCredentials: true })
+                const response = await axios.get("/diary/user-diary",
+                )
 
                 setDiary(response.data)
 
