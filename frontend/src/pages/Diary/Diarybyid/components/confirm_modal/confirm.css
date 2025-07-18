@@ -32,5 +32,17 @@
   .modal-buttons .danger {
     background-color: #ff4444;
     color: white;
+     border-style: none;
+     width: 25%;
+     height: 30px;
+  }
+
+  .go-back{
+    border-style: none;
+     width: 25%;
+     height: 30px;
+     background-color: #442c7d;
+     color: aliceblue;
+
   }
   

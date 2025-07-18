@@ -8,13 +8,15 @@ export const ConfirmDeleteModal = ({ selectedLog, onCancel, onConfirm }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h3>Biztosan törlöd ezt a bejegyzést?</h3>
+        <h3>Napló:</h3>
         <p>
-          {selectedLog.exer_name} – {selectedLog.rep} ismétlés –{" "}
+          <p>{selectedLog.exer_name}</p>  
+          <p>{selectedLog.rep} ismétlés</p>
+          
           {new Date(selectedLog.date).toLocaleString()}
         </p>
         <div className="modal-buttons">
-          <button onClick={onCancel}>Mégse</button>
+          <button onClick={onCancel} className="go-back">Mégse</button>
           <button onClick={onConfirm} className="danger">
             Törlés
           </button>
