@@ -20,12 +20,14 @@ export const Login = () => {
                     name,
                     password
                 },
-                {
-                    withCredentials: true
-                }
+                
+                
 
 
             );
+            const token = response.data.access_token
+            localStorage.setItem("access_token",  token);
+
             navigate("/profile");
             setName("")
             setPassword("")

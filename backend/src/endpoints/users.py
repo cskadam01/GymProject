@@ -72,21 +72,8 @@ def login(user: LoginUser, response: Response):
     
     token = create_access_token({"sub" : user_data["name"]}) #itt meghívjuk a token.pyból a create_acess_tokent és beadjuk paraméternek a felhasználó nevét akinek "kiállítjuk"
 
-    # response egy FastAPI-s válaszobjektum, ami a fastapi.responses.Response osztály példánya.
-
-    response.set_cookie(
-        key="access_token",   # A süti neve – így fogjuk lekérni később
-        value=token,          # A süti tartalma maga a JWT token
-        httponly=True,        # Ne legyen elérhető JavaScriptből → XSS elleni védelem
-        secure=True,         # Fejlesztéshez jó így, élesben legyen True (csak HTTPS)
-        samesite="none",       # Csak közvetlen böngészős interakció esetén küldi el a süti → CSRF ellen
-        max_age=3600 * 3      # Mennyi idő után járjon le
-    )
-
-    
-
-    
     return {"message" : "Sikeres bejelentkezés",
+            "access_token" : token,
             "name" : user_data["name"],
             "email" : user_data["email"] }
 

@@ -27,15 +27,16 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=3
 #----------------------Aktuális Bejelentkezett Felhasználó Lekérdezése----------------------
 
 def get_current_user(request: Request, response: Response):
-    token = request.cookies.get("access_token")  #lekéri a kiküldött tokent, amikor ai hívás történik a frontend elküldi a sutit és onnan olvassa ki
-    print("Cookie token:", token)
+    auth_header = request.headers.get("Authorization")  #lekéri a kiküldött tokent, amikor ai hívás történik a frontend elküldi a sutit és onnan olvassa ki
+    print("Authorization header:", auth_header)
 
 
-    if not token:
+    if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Nincs bejelentkezve"
-        )                                        #ha nincs akkor hibát küld
+        )              
+    token = auth_header.split(" ")[1]                          #ha nincs akkor hibát küld
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM]) #decodolja a tokent és elmenti a payloadba
@@ -55,20 +56,9 @@ def get_current_user(request: Request, response: Response):
             ) #Ha nincs felhasználónév akkor nem érvénes a token
 
 
-        #Mivel ez a függvény szinte minden api lekérdezésnél lefut ezért ha itt adunk egy új tokent akkor a nagyon nyagran frissül a token 
+       
 
-        if expire_time <= timedelta(hours=2) :  #csak akkor küldünk új tokent, ha már 2 vagy kevesebb idő van hátra a jelenlegi életéből
-            new_token = create_access_token({"sub" : username})
-            response.set_cookie(
-                key = "access_token",
-                value = new_token,
-                httponly=True,
-                secure = True,
-                samesite= "none",
-                max_age= 3600*3
-
-
-            )
+       
 
         return {"name": username}
 

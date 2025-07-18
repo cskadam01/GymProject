@@ -12,15 +12,29 @@ export const AuthWrapper = ({ children }) => {
   //Lekérjük a felhasználót és ha van találat akkor authorized-ot true-ra állítjuk ha pedig nincs találat visszakerülünk a login page-re
   useEffect(() => {
     const checkAuth = async () => {
+      const token =localStorage.getItem("access_token")//lekérjük a local storagbementett tokent
+      if(!token){
+        navigate("/login")
+        return
+
+
+      }
+
+
       try {
         const response = await axios.get("https://gymproject-gpdz.onrender.com/users/me", {
-          withCredentials: true,
+          headers:{
+            Authorization: `Bearer ${token}`,
+
+
+          },
         });
 
         if (response.status === 200) {
           setAuthorized(true);
         }
       } catch (error) {
+        console.error("Auth error:", error);
         navigate("/login");
       } finally {
         setLoading(false);

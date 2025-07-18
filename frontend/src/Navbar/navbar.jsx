@@ -13,21 +13,9 @@ export const Navbar =() => {
 
    
         const HandleLogout = async () => {
-        try{
-        const response = await axios.post("http://localhost:8000/users/logout", {}, {withCredentials: true});
-        
-
-        console.log("kijelentkezve:",response.data);
-        navigate("/login")
-        
-    
+            localStorage.removeItem("access_token")
+            navigate("/login")
         }
-        catch (err){
-            console.error(error)
-
-
-    }};
-
 
      const OpenNavbar = () => {
             setIsOpen(!isOpen)
