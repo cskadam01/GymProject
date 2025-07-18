@@ -9,18 +9,37 @@ export const BrowseExercises = () => {
     const [exercises, setExercises] = useState([])
     const [error, setError] = useState("")
     const [res, setRes] = useState("")
+    const [selectedMuscles, setSelectedMuscles] = useState([]);
+    const muscleGroups = ["Váll", "Hát", "Mell", "Bicepsz","Tricepsz", "Láb"]; // legyenek nagybetűvel, ahogy az adatbázisban van
+
 
 
 
 
     useEffect(() => {
         const GetAllExercise = async () => {
+
+            const timestamp = localStorage.getItem("all_exercises_timestamp");
+            const now = Date.now();
+        
+            // Ha kevesebb mint 1 óra telt el (1 óra = 1000 * 60 * 60 ms)
+            if (timestamp && now - parseInt(timestamp) < 1000 * 60 * 60) {
+              const cached = localStorage.getItem("all_exercises");
+              if (cached) {
+                const parsed = JSON.parse(cached);
+                setExercises(parsed);
+                console.log("Feladatok betöltve localStorage-ből");
+                return;
+              }
+            }
+
             try {
                 const response = await axios.get("/exercise/get-all-exercise",
                    
                 )
                 if (response.status == 200) {
                     setExercises(response.data)
+                    localStorage.setItem("all_exercises", JSON.stringify(response.data));
                     console.log("Adatok eltárolva", exercises)
                 }
             }
@@ -69,9 +88,31 @@ export const BrowseExercises = () => {
 
             <div className="exer-container">
             <Navbar/>
+            <div style={{ padding: "10px", color: "white", display: "flex", flexWrap: "wrap", gap: "15px" }}>
+                {muscleGroups.map((muscle) => (
+                    <label key={muscle}>
+                    <input
+                        type="checkbox"
+                        checked={selectedMuscles.includes(muscle)}
+                        onChange={() =>
+                        setSelectedMuscles((prev) =>
+                            prev.includes(muscle)
+                            ? prev.filter((m) => m !== muscle)
+                            : [...prev, muscle]
+                        )
+                        }
+                    />
+                    {muscle}
+                    </label>
+                ))}
+                </div>
 
                 <div className="exer-cont">
-                {exercises.map((exercise, index) => (
+                {exercises
+                        .filter((exercise) =>
+                            selectedMuscles.length === 0 || selectedMuscles.includes(exercise.muscle)
+                        )
+                        .map((exercise, index) => (
                     <div className="exer-list"key={index}>
 
                         <h3 className="browse-name">{exercise.exer_name}</h3>

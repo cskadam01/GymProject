@@ -18,6 +18,9 @@ export const OpenedExer = () => {
     useEffect(() => {
                 const GetExerByID = async () => {
                     try {
+                     
+
+
                     const Validate = await axios.get(
                         "/diary/is-authorized",
                         {
@@ -32,6 +35,7 @@ export const OpenedExer = () => {
                     if (allowed) {
                         const response = await axios.get(`/exercise/exer/${id}`); //a linkből kiszedjük az id-t és betesszük ide a linkbe
                         setExerName(response.data.exer_name);
+                        
                         setIsValid(true); // ✅ csak akkor állítjuk true-ra, ha minden adat megvan
                     } else {
                         setIsValid(false); // ❌ nincs jogosultság

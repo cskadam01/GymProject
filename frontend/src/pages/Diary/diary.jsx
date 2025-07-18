@@ -9,6 +9,18 @@ import { CgGym } from "react-icons/cg";
 
 export const Diary = () => {
     const [diary, setDiary] = useState([])
+    const [selectedMuscles, setSelectedMuscles] = useState([]);
+    const muscleGroups = ["Váll", "Hát", "Mell", "Bicepsz","Tricepsz", "Láb"];
+
+    
+
+    const handleCheckboxChange = (muscle) => {
+        setSelectedMuscles((prev) =>
+          prev.includes(muscle)
+            ? prev.filter((m) => m !== muscle)
+            : [...prev, muscle]
+        );
+      };
  
     useEffect(() => {
         const getUserDiary = async () => {
@@ -35,12 +47,29 @@ export const Diary = () => {
         <>  
             <Navbar/>
             <div className="diary-conatiner">
+            <div style={{ padding: "10px", color: "white" }}>
+                {muscleGroups.map((muscle) => (
+                    <label key={muscle} style={{ marginRight: "10px" }}>
+                    <input
+                        type="checkbox"
+                        checked={selectedMuscles.includes(muscle)}
+                        onChange={() => handleCheckboxChange(muscle)}
+                    />
+                    {muscle}
+                    </label>
+                ))}
+                </div>
+
                 <div className="diary-cont" style={{paddingBottom:"20px"}}>
                 {diary.length === 0 ? (
                     <p style={{color:"white"}}>Napló üres</p>             
 
                 ) : (
-                    diary.map((item) => (
+                    diary
+                            .filter((item) =>
+                                selectedMuscles.length === 0 || selectedMuscles.includes(item.muscle)
+                            )
+                            .map((item) => (
                         <div className="diary-item" key={item.id} >
                             
                             <Link to={`/diary/${item.id}`} style={{textDecoration:"none"}}>   {/* Beadjuk, hogy a választott linkre vigye tovább a felhasználót az id alapján */}
