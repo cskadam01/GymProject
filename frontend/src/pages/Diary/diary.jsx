@@ -35,13 +35,13 @@ export const Diary = () => {
         <>  
             <Navbar/>
             <div className="diary-conatiner">
-                <div className="diary-cont">
+                <div className="diary-cont" style={{paddingBottom:"20px"}}>
                 {diary.length === 0 ? (
                     <p style={{color:"white"}}>Napló üres</p>             
 
                 ) : (
                     diary.map((item) => (
-                        <div className="diary-item" key={item.id}>
+                        <div className="diary-item" key={item.id} >
                             
                             <Link to={`/diary/${item.id}`} style={{textDecoration:"none"}}>   {/* Beadjuk, hogy a választott linkre vigye tovább a felhasználót az id alapján */}
                                 <div className="diary-data">
