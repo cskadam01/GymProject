@@ -16,9 +16,17 @@ export function ProfileBody({age, email, exercount}) {
                         egy sajátot
 
                     </p>
-                    <p>Ez az oldal első sorban telefonos felhasználásra lett tervezve, de számítógépen is rendesen fog futni</p>
+                    <p>Ez az oldal első sorban telefonos felhasználásra lett tervezve, de számítógépen is rendesen fog futni, ez késöbbi frissítésekben fog változni</p>
                     <p>Bármilyen észrevétel nagyon sokat tud segíteni a lenti
                         lehetőségeken kérlek vedd fel velem a kapcsolatot és egyeztetünk </p>
+
+
+                    <p>verzió szám: 0.1 alpha
+                    </p>
+
+                    
+
+
 
                 </div>
 
@@ -27,7 +35,8 @@ export function ProfileBody({age, email, exercount}) {
                     <h3>Adataid</h3>
                     <p><IoMailOutline style={{marginRight:"8px"}}/>{email}</p>
                     <p><HiOutlineCake /> {age} éves</p>  
-                    <p><IoSaveOutline /> {exercount} naplózott feladat</p>                  
+                    <p><IoSaveOutline /> {exercount} naplózott feladat</p>
+                    
                 </div>
 
 

@@ -50,6 +50,7 @@ useEffect(()=>{
             <div className="profile-content">
                 <ProfileHeader username = {userName}/>
                 <ProfileBody age = {age} email = {email} exercount = {exerCount} />
+                
 
 
             </div>

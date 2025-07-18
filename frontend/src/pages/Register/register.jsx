@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import "./register.css"
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +13,7 @@ export const Register = () => {
     const [passwordCheck, setPasswordCheck] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const [disabled, setDisabled] = useState(false);
 
 
 
@@ -21,6 +21,7 @@ export const Register = () => {
     const HandleRegister = async () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/
+        
 
         if (!emailRegex.test(email)) {
         setError("Nem megfelelő formátum");
@@ -38,6 +39,9 @@ export const Register = () => {
             setError("A jelszónak legalább 6 karakter hosszúnak kell lennie, és tartalmaznia kell számot és nagybetűt")
             return
         }
+
+        setTimeout(() => setDisabled(false), 5000);
+        setDisabled(true);
         
 
 
@@ -162,7 +166,9 @@ export const Register = () => {
                         </Link>
 
 
-                        <button type="button" onClick={HandleRegister}>Regisztráció</button>
+                        <button type="button" onClick={HandleRegister} disabled={disabled}>
+                        Regisztráció
+                        </button>
 
 
 

@@ -23,29 +23,7 @@ class ExerId(BaseModel):
 
 #------------------- ITT TALÁLHATÓAK A FELADATOKKAL KAPCSOLATOS ENDPOINTOK -------------------------
 
-@router.post("/save-to-diary")
 
-
-def save_to_diary(exer : ExerId, current_user: dict = Depends(get_current_user)):
-    try:
-        print("EXER ID:", exer.exerciseID)
-        print("USER NAME:", current_user["name"])
-
-        docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
-
-
-
-        user_ref = docs[0].reference
-
-        user_ref.update({
-                "saved_exercises": firestore.ArrayUnion([exer.exerciseID])   #feladat arrayhez való apendálás a feladat idjét
-            })
-        
-        return{"success" : "Feladat hozzá adva a naplóhoz"}
-
-    except Exception as e:
-        print("Hiba Firestore frissítésnél:", e)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Naplózás sikertelen: {e}")
        
     
 

@@ -1,7 +1,10 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "https://gymproject-gpdz.onrender.com",
+  baseURL:
+    import.meta.env.MODE === "development"
+      ? "http://localhost:8000"
+      : "https://gymproject-gpdz.onrender.com",
   headers: {
     "Content-Type": "application/json",
   },
