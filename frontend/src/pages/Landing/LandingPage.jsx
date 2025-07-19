@@ -13,9 +13,11 @@ export const LandingPage = () => {
                 </Link>
             </div>
             <div className="landing-cont">
-                <h1>FluxNote</h1>
+                <h1 style={{color:""}}>FluxNote</h1>
                 
-                <p>Maximalizáld edzéseid egyszerűen</p>
+                <h2 style={{color:""}}>Maximalizáld edzéseid egyszerűen</h2>
+                
+                
                 <Link to={"/register"}>
                 <button >Vágjunk Bele</button>
                 </Link>
