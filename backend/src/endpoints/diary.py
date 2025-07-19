@@ -24,28 +24,26 @@ class ExerId(BaseModel):
 
 @router.get("/user-diary")
 def get_saved_exer(current_user: dict = Depends(get_current_user)):
-        
     try:
+        user_docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
+        saved_ids = user_docs[0].to_dict().get("saved_exercises", [])
+
+        doc_refs = [db.collection("exercise").document(doc_id) for doc_id in saved_ids]
+        docs = db.get_all(doc_refs)
+
         saves = []
-
-        docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
-
-
-        saved_ids = docs[0].to_dict().get("saved_exercises", [])
-
-
-        for exercise_id in saved_ids:
-            doc = db.collection("exercise").document(exercise_id).get()
+        for doc in docs:
             if doc.exists:
                 data = doc.to_dict()
                 data["id"] = doc.id
-                
                 saves.append(data)
+
         return saves
-    
+
     except Exception as e:
         print(f"Hiba {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"valami hiba lépett fel a lekérdezéskor: {e}")
+
     
 
 @router.post("/save-to-diary")
