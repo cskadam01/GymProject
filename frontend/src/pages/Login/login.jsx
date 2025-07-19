@@ -56,7 +56,9 @@ export const Login = () => {
             <form action="">
                 <div className="login-cont">
                     <div className="login-margin">
-                    <h1>Bejelentkezés</h1>
+                    <h1>Jó újra látni</h1>
+                    <h2>Jelentkezz be fiókodba</h2>
+
                     <div className="login-tilte-error">
                     <p className="login-input-title"> Felhsználónév</p>
                     {error === "Helytelen felhasználónév" && <p className="login-error-username">{error}</p>}
