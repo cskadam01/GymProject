@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from pydantic import BaseModel
 from src.firebase import db
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
-from src.token import get_current_user
+from backend.src.jwt_token import get_current_user
 from google.cloud import firestore
 
 router = APIRouter(
@@ -25,8 +25,9 @@ class ExerId(BaseModel):
 @router.get("/user-diary")
 def get_saved_exer(current_user: dict = Depends(get_current_user)):
     try:
-        user_docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
-        saved_ids = user_docs[0].to_dict().get("saved_exercises", [])
+        user_doc = db.collection("users").document(current_user["name"]).get()
+        user = user_doc.to_dict()
+        saved_ids = user.get("saved_exercises", [])
 
         doc_refs = [db.collection("exercise").document(doc_id) for doc_id in saved_ids]
         docs = db.get_all(doc_refs)
@@ -54,11 +55,12 @@ def save_to_diary(exer : ExerId, current_user: dict = Depends(get_current_user))
         print("EXER ID:", exer.exerciseID)
         print("USER NAME:", current_user["name"])
 
-        docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
+        user_doc = db.collection("users").document(current_user["name"]).get()
+        
 
 
 
-        user_ref = docs[0].reference
+        user_ref = user_doc.reference #referencel megszerezzük hogy a gettel melyik objektumot kértük le
 
         user_ref.update({
                 "saved_exercises": firestore.ArrayUnion([exer.exerciseID])   #feladat arrayhez való apendálás a feladat idjét
@@ -127,9 +129,9 @@ def is_exercise_authorized(exercise_id: str = Query(...), #A Querry miatt kötel
                            current_user: dict = Depends(get_current_user)):
     
     
-    docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
-
-    saved_ids = docs[0].to_dict().get("saved_exercises", [])
+    user_doc = db.collection("users").document(current_user["name"]).get()
+    user = user_doc.to_dict()
+    saved_ids =user.get("saved_exercises", [])
 
     if exercise_id in saved_ids: #Megnézzük hogy a frontendről érkezett id benne van e a felhasználó által mentett idk listájában
             return {"authorized": True}

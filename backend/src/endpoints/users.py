@@ -4,7 +4,7 @@ import bcrypt
 from jose import jwt
 from datetime import datetime, timedelta
 import os
-from src.token import create_access_token, get_current_user
+from backend.src.jwt_token import create_access_token, get_current_user
 from src.firebase import db
 from fastapi.responses import Response
 
@@ -40,10 +40,8 @@ def test_protected_route(current_user: dict = Depends(get_current_user)): #A tok
 def get_me(current_user: dict = Depends(get_current_user)):
 
     # a users collectionból lekérjük azt a dokumentumot ahol a name key megegyezik a current user-el
-    users = db.collection("users").where("name", "==", current_user["name"]).get() 
-
-    user = users[0].to_dict()
-
+    user_doc = db.collection("users").document(current_user["name"]).get()
+    user = user_doc.to_dict()
     # Ha nincs a felhasznűlónak ilyen listája akkor egy öres lista hoszzát kéri le a hibát elkerülve
     # (ez a hiba már nem fordulhat elő, mert alapból üres listával regisztrálnak a tagok, de benne hagyom)
     addedExer  = len(user.get("saved_exercises", []))
@@ -82,40 +80,22 @@ def login(user: LoginUser, response: Response):
 
 @router.post("/register")
 def register(user: RegisterUser):
-
-    user_conflict = db.collection("users").where("name", "==", user.name).get()    #Lekérdezzük hogy van e már olyan felhasznűló amit megadtunk
-
-    if user_conflict:               # Ha van akkor hibát dob
+    # Megnézzük, van-e már ilyen név (azonos nevű dokumentum = konfliktus)
+    user_ref = db.collection("users").document(user.name)
+    if user_ref.get().exists:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Foglalt felhasználónév")
-    
 
-    # Ha mincs akkor titkosítjuk a fálhasználó által megadott jelszót
     hashed_password = bcrypt.hashpw(user.password.encode(), bcrypt.gensalt()).decode()
 
-
-    # Data dict létrehozása, ezt küldjük a firebase-nek
     data = {
-        "name" : user.name,
-        "age" : user.age,
+        "name": user.name,
+        "age": user.age,
         "password": hashed_password,
-        "email" : user.email,
+        "email": user.email,
         "saved_exercises": []
-        
     }
 
-    # users collectionbe bekerül a ez elöbb létrehozott dict
-    db.collection("users").add(data)
+    # Dokumentum hozzáadása konkrét névvel
+    user_ref.set(data)
 
-    return {"success" : f"{user.name} sikeresen regisztrálva"}
-
-
-
-@router.post("/logout")
-def logout(response: Response):
-    response.delete_cookie(key="access_token")
-    return {"message": "Sikeres kijelentkezés"}
-
-
-
-
-
+    return {"success": f"{user.name} sikeresen regisztrálva"}

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from src.firebase import db
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
-from src.token import get_current_user
+from backend.src.jwt_token import get_current_user
 from google.cloud import firestore
 
 router = APIRouter(
@@ -36,12 +36,12 @@ def get_all_exercise(current_user: dict = Depends(get_current_user)):
         exercises = []
 
         # 2. Felhasználó dokumentum lekérdezése
-        user_docs = db.collection("users").where("name", "==", current_user["name"]).limit(1).get()
-        if not user_docs:
-            raise HTTPException(status_code=404, detail="Felhasználó nem található")
+        user_doc = db.collection("users").document(current_user["name"]).get()
+        if not user_doc.exists:
+                raise HTTPException(status_code=404, detail="Felhasználó nem található")
 
-        # 3. Elmentett gyakorlatok listája
-        saved = user_docs[0].to_dict().get("saved_exercises", [])
+        user = user_doc.to_dict()
+        saved = user.get("saved_exercises", [])
 
         # 4. Végigmegyünk az összes feladaton, és megnézzük, el van-e mentve
         for i in docs:

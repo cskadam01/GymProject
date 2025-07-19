@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 #---------------------------------- Adatbézishoz kapcsolódás ----------------------------------
-firebase_key = os.getenv("FIREBASE_KEY_PATH")
+firebase_key = os.path.abspath(os.path.join(os.path.dirname(__file__), "../gymdatabase-129e2-firebase-adminsdk-fbsvc-f4d145d2ff.json"))
 
 cred = credentials.Certificate(firebase_key)
 initialize_app(cred)
