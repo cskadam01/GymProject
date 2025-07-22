@@ -4,8 +4,8 @@ import bcrypt
 from jose import jwt
 from datetime import datetime, timedelta
 import os
-from src.jwt_token import create_access_token, get_current_user
-from src.firebase import db
+from jwt_token import create_access_token, get_current_user
+from firebase import db
 from fastapi.responses import Response
 
 

@@ -1,10 +1,9 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
-from src.firebase  import db  # így importálod, ha pl. a backend mappában van a db
+
 
 def migrate_users_by_name():
     users = db.collection("users").get()
