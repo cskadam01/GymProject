@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from pydantic import BaseModel
 import bcrypt
 from jose import jwt
@@ -55,7 +55,7 @@ def get_me(current_user: dict = Depends(get_current_user)):
 
 
 @router.post("/login")
-def login(user: LoginUser, response: Response):
+def login(user: LoginUser, response: Response, request : Request):
     db_user = db.collection("users").where("name", "==", user.name).get()
 
     
@@ -65,10 +65,53 @@ def login(user: LoginUser, response: Response):
     
     user_data = db_user[0].to_dict() # Az első eredményt vissza kapjuk és a json filet átalakítjuk python .todict() metódussal hogy tudj
     
+
+
+
+    client_ip = request.client.host #Kliens ip lekérdezése
+    now = datetime.utcnow().isoformat() #pontos idő lekérése
+    doc_id = f"{now} {user_data['name']}" #dokumetnum id generálás idő és név alapján
+
+
+
     if not bcrypt.checkpw   (user.password.encode("utf-8"), user_data["password"].encode("utf-8")): #aa beírt jelszót titkosítja majd össze hasonlítja a firestoreból kapott haselt jelszóval és ha nem egyezik meg hibát dob
-       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Helytelen jelszó")
+        error_data = {
+            
+                "name" : user_data["name"],
+                "time" : now,
+                "ip" : client_ip,
+                "status" : "failed",
+                "reason" : "wrong_pass"
+            
+
+        }
+        db.collection("login-logs").document(doc_id).set(error_data)
+        
+        
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Helytelen jelszó")
+
+        
+    
+
+
+    
+
     
     token = create_access_token({"sub" : user_data["name"]}) #itt meghívjuk a token.pyból a create_acess_tokent és beadjuk paraméternek a felhasználó nevét akinek "kiállítjuk"
+
+   
+
+    data = {
+        "name" : user_data["name"],
+        "time" : now,
+        "ip" : client_ip,
+        "status" : "success"
+    }
+
+
+    db.collection("login-logs").document(doc_id).set(data) #betesszük a "login-logs" collectionbe az elöbb megadott dokumentumot
+    
+    print(f"{user_data['name']} bejelentkezett")
 
     return {"message" : "Sikeres bejelentkezés",
             "access_token" : token,
