@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "../../instance";
 
 
+
 export const Register = () => {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
@@ -14,6 +15,7 @@ export const Register = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const [disabled, setDisabled] = useState(false);
+    const [asf, setAsf] = useState(false);
 
 
 
@@ -22,6 +24,11 @@ export const Register = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/
         
+        if(!asf){
+            setError("ÁSF elfogadása kötelező")
+            alert("Asf Elfogadása kötelező")
+            return
+        }
 
         if (!emailRegex.test(email)) {
         setError("Nem megfelelő formátum");
@@ -161,9 +168,22 @@ export const Register = () => {
                             placeholder="Kor"
                             required />
                         <br />
-                        <Link to={"/login"} style={{textDecoration:"none"}}>
+                        <Link to={"/login" } style={{color:"white"}}>
                             <p className="register-link">Már Van fiókod?</p>
                         </Link>
+                        <div className="register-asf" >
+                           
+                             <input
+                                
+                                type="checkbox"
+                                name="myCheckbox"
+                                checked={asf}
+                                onChange={(e) => setAsf(e.target.checked)}
+                               
+                                />  <label htmlFor="myCheckbox" style={{marginTop:"5px", marginLeft:"10px"}}> <Link to={"asf"} style={{color:"white"}}>Ásf</Link>  elfogadása</label>
+
+
+                                </div> 
 
 
                         <button type="button" onClick={HandleRegister} disabled={disabled}>

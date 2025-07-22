@@ -4,19 +4,21 @@
 .login-container {
     background-color: #0e0e11;
     height: 100vh;
-   
+    position: fixed;
     
     width: 100%;
 }
 
 .login-cont {
     width: 100%;
-    padding-top: 50%;
+    margin-top: 30%;
+    
     
 
 }
 
 .login-cont h1 {
+    
     text-align: center;
     margin: 0px 0px 10px 0px;
     padding-top: 30px;
@@ -104,5 +106,41 @@
     color: rgb(163, 0, 0);
     margin-top: 3px;
     
+
+}
+
+
+@media  (min-width: 700px) {
+    .login-cont {
+        margin-top: 10% !important;
+   
+    }
+}
+
+
+@media  (min-width: 1100px) {
+    .login-cont {
+        margin-top: 5% !important;
+   
+    }
+
+    .login-cont input{
+    width: 15%;
+    margin-left: 42.5%;
+
+}
+.login-cont button{
+    width: 15.5%;
+    margin-left: 42.5%;
+
+
+}
+.login-input-title{
+    margin-top: 0px;
+    font-size: 1.16rem;
+    margin-left: 42.5%;
+    color: aliceblue;
+    font-family: "Space Grotesk";
+}
 
 }
