@@ -2,7 +2,8 @@
 FROM python:3.11-slim
 
 # 2. Munkakönyvtár beállítása
-WORKDIR /app
+WORKDIR /app/backend
+
 
 # 3. Követelmények bemásolása és telepítése
 COPY requirements.txt .
@@ -13,5 +14,6 @@ COPY backend/ ./backend/
 
 # 5. A FastAPI app futtatása
 CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
 
 
