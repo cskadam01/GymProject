@@ -4,7 +4,7 @@ const instance = axios.create({
   baseURL:
     import.meta.env.MODE === "development"
       ? "http://localhost:8000"
-      : "https://gymproject-gpdz.onrender.com",
+      : "https://gymproject-production-6e75.up.railway.app",
   headers: {
     "Content-Type": "application/json",
   },

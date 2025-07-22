@@ -59,7 +59,7 @@ export const BrowseExercises = () => {
 
     const addToDiary = async (exerciseID) => {
         try {
-            const response = await axios.post("https://gymproject-gpdz.onrender.com/diary/save-to-diary", {
+            const response = await axios.post("/diary/save-to-diary", {
                 exerciseID
             },
                 {
@@ -120,7 +120,7 @@ export const BrowseExercises = () => {
                         <p  className="browse-type">Típus: {exercise.type}</p>
                         <p  className="browse-desc">Leírás: {exercise.exer_description}</p>
                         <p  className="browse-isSaved">{exercise.saved ? "Ez a feladat már szerepel a naplódban" : null}</p>
-                        {exercise.saved ? <button className="exer-button-dis" disabled>Hozzáadás</button> : <button className="exer-button-active" onClick={() => addToDiary(exercise.id)}>Hozzáadás</button>  }
+                        {exercise.saved ? <button className="exer-button-dis" disabled>Hozzáadás</button> : <button className="exer-button-active" onClick={() => addToDiary(exercise.id)} style={{color:"white"}}>Hozzáadás</button>  }
                         
 
                         
