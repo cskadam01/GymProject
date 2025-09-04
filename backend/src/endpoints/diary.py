@@ -1,14 +1,21 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from pydantic import BaseModel
-from firebase import db
+from src.firebase import db
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
-from jwt_token import get_current_user
+from src.jwt_token import get_current_user
 from google.cloud import firestore
+import os
+from dotenv import load_dotenv
 
 router = APIRouter(
     prefix="/diary",
     tags=["Diary"]
 )
+
+load_dotenv()
+
+
+
 
 
 class NewSave(BaseModel):

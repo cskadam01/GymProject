@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from firebase import db
+from src.firebase import db
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
-from jwt_token import get_current_user
+from src.jwt_token import get_current_user
 from google.cloud import firestore
 
 router = APIRouter(

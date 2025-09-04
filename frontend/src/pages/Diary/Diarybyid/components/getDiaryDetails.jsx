@@ -88,8 +88,11 @@ export const GetDiaryDetail = ( {exer_id, refresh_key}) => {
             <Diagrams  title = "7-8 ismétlés közt" logs={groupedLogs["7-8"]} triggerRefresh={() => setRefreshKey(prev => prev + 1)} />
             <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>9-10 közti ismétlés tartomány</h1>
             <Diagrams  title = "9-10 ismétlés közt" logs={groupedLogs["9-10"]} triggerRefresh={() => setRefreshKey(prev => prev + 1)} />
+              
             <h1 style={{color:'white', marginBottom:'30px', fontSize:'1.6rem', marginLeft:'5%'}}>11 és a feletti ismétlés tartomány</h1>
+
             <Diagrams  title = "11-nél Több ismétlés" logs={groupedLogs["11 +"]} triggerRefresh={() => setRefreshKey(prev => prev + 1)} />
+            
             </div>
 
         )

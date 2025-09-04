@@ -15,16 +15,20 @@ def save_users_to_excel():
         
         data = doc.to_dict()
         data["id"] = doc.id
+      
+
         rows.append({
             "id" : data["id"],
             "name": data.get("name", ""),
-            "email": data.get("email", "") 
+            "email": data.get("email", ""),
+
+             
 
 
         })
     df = pd.DataFrame(rows)
     df.to_excel(f"{now}felhasznalok.xlsx", index=False)
-
+    
        
 if __name__ == "__main__" :
     save_users_to_excel()

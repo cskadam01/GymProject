@@ -1,12 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from pydantic import BaseModel
 import bcrypt
-from jose import jwt
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
-from jwt_token import create_access_token, get_current_user
-from firebase import db
+from src.jwt_token import create_access_token, get_current_user
+from src.firebase import db
 from fastapi.responses import Response
+from email.message import EmailMessage
+import secrets
+from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+from typing import List
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 router = APIRouter(
@@ -15,9 +23,21 @@ router = APIRouter(
 )
 
 
+conf = ConnectionConfig(
+    MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
+    MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
+    MAIL_FROM=os.getenv("MAIL_FROM"),
+    MAIL_PORT=int(os.getenv("MAIL_PORT")),
+    MAIL_SERVER=os.getenv("MAIL_SERVER"),
+    MAIL_STARTTLS=os.getenv("MAIL_STARTTLS") == "True",
+    MAIL_SSL_TLS=os.getenv("MAIL_SSL_TLS") == "True",
+    USE_CREDENTIALS=os.getenv("USE_CREDENTIALS") == "True"
+)
+
 #------------------- ITT TALÁLHATÓAK AZ AUTENTIKÁCÓ ÉS FELHASZNÁLÓKKAL KAPCSOLATOS ENDPOINTOK -------------------------
 
-
+# class EmailSchema(BaseModel):
+#    email: List[EmailStr]
 
 class LoginUser(BaseModel):
     name: str
@@ -26,6 +46,12 @@ class RegisterUser(LoginUser):
     email: str
     age: int
 
+class ForgottenPassword(BaseModel):
+    user_name: str
+
+class ChangePassword(BaseModel):
+    old_password: str
+    new_password: str
 
 @router.get("/test-protected")
 def test_protected_route(current_user: dict = Depends(get_current_user)): #A token. pyból lefuttatjuk a current_user metódust,
@@ -89,17 +115,7 @@ def login(user: LoginUser, response: Response, request : Request):
         
         
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Helytelen jelszó")
-
-        
-    
-
-
-    
-
-    
     token = create_access_token({"sub" : user_data["name"]}) #itt meghívjuk a token.pyból a create_acess_tokent és beadjuk paraméternek a felhasználó nevét akinek "kiállítjuk"
-
-   
 
     data = {
         "name" : user_data["name"],
@@ -142,3 +158,77 @@ def register(user: RegisterUser):
     user_ref.set(data)
 
     return {"success": f"{user.name} sikeresen regisztrálva"}
+
+
+@router.post("/forgotten-passoword")
+async def forgotten_password(user: ForgottenPassword, ):
+
+    #kikeressük a felhasználót név alapján
+    user_ref = db.collection("users").where("name", "==", user.user_name).get()
+    if not user_ref:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Nincs ilyen e-mail című felhasználó")
+    
+    user_data = user_ref[0].to_dict()
+
+    #generálunk egy új jelszót
+    password_length = 13
+    new_pass = secrets.token_urlsafe(password_length)
+
+    #leváltjuk az új jelszóra a régit
+    hashed_password = bcrypt.hashpw(new_pass.encode(), bcrypt.gensalt()).decode()
+    db.collection("users").document(user_data["name"]).update({"password": hashed_password})
+
+
+    #Email megyrása
+    template = f"""
+    <html>
+        <body>
+            <h1>Kedves {user_data['name']}!</h1>
+            <h3>Úgy tűnik, hogy a FluxNote-on új jelszót kértél!</h3>
+
+            <p>Elküldük az új jelszavad, amit kérünk, hogy bejelentkezés után változtass meg a profilodon!</p>
+            <h2>Új jelszavad:</h2>
+            <p>{new_pass}</p>
+    
+            <p>Ha nem te kérted az új jelszót, akkor ezt az e-mailt figyelmen kívül hagyhatod.</p>
+        </body>
+    </html>
+
+ """
+    
+    #email küldése
+    message = MessageSchema(
+       subject="Fastapi-Mail module",
+       recipients= [user_data['email']], # List of recipients, as many as you can pass
+       body=template,
+       subtype="html"
+       )
+
+
+    fm = FastMail(conf)
+    await fm.send_message(message)
+    return {"success": "Email elküldve"}
+
+
+@router.post("/change-password")
+def change_password(passes : ChangePassword, current_user: dict = Depends(get_current_user)):
+    db_user = db.collection("users").where("name", "==", current_user['name']).get()
+    use_ref = db_user[0].to_dict()
+
+
+    if not bcrypt.checkpw   (passes.old_password.encode("utf-8"), use_ref["password"].encode("utf-8")): #aa beírt jelszót titkosítja majd össze hasonlítja a firestoreból kapott haselt jelszóval
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Helytelen jelszó")
+    
+    hashed_password = bcrypt.hashpw(passes.new_password.encode(), bcrypt.gensalt()).decode()
+    
+    db.collection("users").document(current_user["name"]).update({"password" : hashed_password})
+    
+
+
+
+    
+    
+
+
+
+    

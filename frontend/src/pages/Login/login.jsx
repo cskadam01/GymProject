@@ -21,9 +21,6 @@ export const Login = () => {
                     password
                 },
                 
-                
-
-
             );
             const token = response.data.access_token
             localStorage.setItem("access_token",  token);
@@ -34,17 +31,10 @@ export const Login = () => {
 
 
             console.log(response.data)
-
-
-
         }
 
         catch (err) {
             setError(err?.response?.data?.detail)
-
-
-
-
         }
 
     };
@@ -89,6 +79,7 @@ export const Login = () => {
                     <p className="login-link">Még nincs Felhasználód?</p></Link>
                     <button className="login-button" type="button" onClick={HandleLogin}>Login</button>
                 </div>
+                div
                 
                 </div>
             </form>

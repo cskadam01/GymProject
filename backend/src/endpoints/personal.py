@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from jwt_token import get_current_user
-from firebase import db
+from src.jwt_token import get_current_user
+from src.firebase import db
 from typing import Optional
 
 
