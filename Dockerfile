@@ -1,18 +1,20 @@
 FROM python:3.11-slim
 
-# 1) Függőségek
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# 1) requirements.txt telepítése (ez legyen az EGYETLEN függőségfájl)
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# 2) Kód: csak a backend mappa kell, benne a src
+# 2) kód
 COPY backend /app/backend
 
-# 3) A PYTHONPATH legyen a 'src' SZÜLŐJE, hogy a 'from src....' import működjön
+# 3) ugyanaz a WORKDIR, mint régen
+WORKDIR /app/backend/src
+
+# 4) hogy a "from src...." importok menjenek
 ENV PYTHONPATH=/app/backend
 
-# 4) Nem bízzuk a WORKDIR-re az importot, megadjuk az app-könyvtárat
-CMD ["sh","-c","uvicorn app:app --app-dir /app/backend/src --host 0.0.0.0 --port ${PORT:-8000}"]
+# 5) Uvicorn indítás (Railway PORT támogatással + ideiglenes debug log)
+CMD ["sh","-c","uvicorn app:app --log-level debug --host 0.0.0.0 --port ${PORT:-8000}"]
 
 
 
