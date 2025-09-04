@@ -1,20 +1,18 @@
 FROM python:3.11-slim
 
-# Függőségek
+# 1) Függőségek
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Kód bemásolása (gyökér -> /app)
-# Ha csak a src kellene, akkor elég: COPY src /app/src
-COPY . .
+# 2) Kód: csak a backend mappa kell, benne a src
+COPY backend /app/backend
 
-# Ha a src importál bármit a backend-ből vagy máshonnan, így biztos a PYTHONPATH
-ENV PYTHONPATH=/app
-WORKDIR /app/src
+# 3) A PYTHONPATH legyen a 'src' SZÜLŐJE, hogy a 'from src....' import működjön
+ENV PYTHONPATH=/app/backend
 
-# Railway-n a PORT változót érdemes használni; fallback 8000 lokális futtatáshoz
-CMD ["sh","-c","uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# 4) Nem bízzuk a WORKDIR-re az importot, megadjuk az app-könyvtárat
+CMD ["sh","-c","uvicorn app:app --app-dir /app/backend/src --host 0.0.0.0 --port ${PORT:-8000}"]
 
 
 
