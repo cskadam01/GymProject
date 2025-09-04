@@ -5,8 +5,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend /app/backend
 ENV PYTHONPATH=/app/backend
 WORKDIR /app/backend/src
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 
+# Debug: listázd ki a src mappát
+RUN ls -l /app/backend/src
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 
 
 
