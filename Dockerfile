@@ -1,23 +1,20 @@
 FROM python:3.11-slim
 
-# 1. requirements.txt bemásolása
-COPY requirements.txt /app/requirements.txt
+# Függőségek
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# 2. Függőségek telepítése
-RUN pip install --no-cache-dir -r /app/requirements.txt
+# Kód bemásolása (gyökér -> /app)
+# Ha csak a src kellene, akkor elég: COPY src /app/src
+COPY . .
 
-# 3. backend mappa bemásolása
-COPY backend /app/backend
+# Ha a src importál bármit a backend-ből vagy máshonnan, így biztos a PYTHONPATH
+ENV PYTHONPATH=/app
+WORKDIR /app/src
 
-# 4. WORKDIR: a `src` mappába lépünk
-WORKDIR /app/backend/src
-
-# 5. PYTHONPATH beállítása, hogy `src` működjön
-ENV PYTHONPATH=/app/backend
-
-# 6. FastAPI indítása
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
-
+# Railway-n a PORT változót érdemes használni; fallback 8000 lokális futtatáshoz
+CMD ["sh","-c","uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"]
 
 
 
