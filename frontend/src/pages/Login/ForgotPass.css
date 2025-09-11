@@ -1,0 +1,67 @@
+.forgot-container{
+    background-color: #0e0e11;
+    height: 100vh;
+    position: fixed;
+    width: 100%;
+}
+
+.forgot-content{
+    width: 100%;
+    margin-top: 60%;
+    color: aliceblue;
+    text-align: center;
+}
+
+.forgot-content h3{
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+.forgot-content input{
+    height: 30px;
+    width: 60%;
+    padding-left: 5%;
+    padding-right: 5%;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+.forgot-content p{
+    font-size: 0.9
+    8rem; 
+}
+
+.forgot-content button{
+    height: 30px;
+    width: 70%;
+    border-radius: 2px;
+    margin-top: 10px;
+    color: aliceblue;
+    border-style: none;
+    background-color: blueviolet;
+    border-radius: 8px;
+}
+
+
+
+.forgot-fail, .forgot-success{
+    display: flex;
+    top: 10%;
+    position: fixed;
+    left: 15%;
+    width: 70%;
+    height: 50px;
+    margin: auto;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    color: aliceblue;
+    
+}
+
+.forgot-fail{
+    background-color: rgba(152, 0, 0, 0.743);
+}
+.forgot-success{
+    background-color: rgb(0, 164, 8);
+
+}

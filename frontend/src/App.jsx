@@ -12,6 +12,7 @@ import { OpenedExer } from "./pages/Diary/Diarybyid/diarybyid";
 import { LandingPage } from "./pages/Landing/LandingPage";
 import { AuthWrapper } from "./AuthWrapper";
 import { Asf } from "./pages/asf";
+import { ForgotPass } from "./pages/Login/ForgotPass";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/asf" element={<Asf />}/>
+        <Route path="forgot-password" element={<ForgotPass/>}/>
 
         {/* Védett route-ok AuthWrapperrel */}
         <Route
