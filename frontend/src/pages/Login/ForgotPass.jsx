@@ -1,6 +1,7 @@
 import { useState, useEffect} from "react";
 import axios from "../../instance";
 import "./ForgotPass.css"
+import { Link } from "react-router-dom";
 
 export const ForgotPass = () => {
     const [name, setName] = useState("");
@@ -88,6 +89,8 @@ export const ForgotPass = () => {
 
                     <p>Add meg a felhasználóneved,<p></p> és elküldjük az új jelszavad</p>
                     <button onClick={handleEmailSend}>Új jelszó kérése</button>
+                    
+                    <Link to = {"/login"} style={{color: "white"}}><p>Bejelentkezés</p></Link>
                     {isLoading &&  <div className="forgot-loading"> <p>Email küldése folyamatban...</p></div>}
 
 

@@ -77,6 +77,7 @@ export const Login = () => {
                     <br />
                     <Link to ={"/register"} style={{textDecoration:"none"}}>
                     <p className="login-link">Még nincs Felhasználód?</p></Link>
+                    <Link to = {"/forgot-password"}> <p className="login-link"> Elfelejtett jelszó</p></Link>
                     <button className="login-button" type="button" onClick={HandleLogin}>Login</button>
                 </div>
                 div
