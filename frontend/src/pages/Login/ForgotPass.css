@@ -55,6 +55,7 @@
     margin-bottom: 10px;
     border-radius: 10px;
     color: aliceblue;
+    transition: .5s, ease-in-out;
     
 }
 

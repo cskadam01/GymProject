@@ -13,6 +13,7 @@ import { LandingPage } from "./pages/Landing/LandingPage";
 import { AuthWrapper } from "./AuthWrapper";
 import { Asf } from "./pages/asf";
 import { ForgotPass } from "./pages/Login/ForgotPass";
+import { NewPassword } from "./pages/Profile/NewPassword/newPassword";
 
 function App() {
   return (
@@ -34,6 +35,16 @@ function App() {
             </AuthWrapper>
           }
         />
+        <Route
+          path="/new-password"
+          element={
+            <AuthWrapper>
+              <NewPassword />
+            </AuthWrapper>
+          }
+        />
+        
+
         <Route
           path="/browse-exercises"
           element={
