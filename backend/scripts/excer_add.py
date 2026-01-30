@@ -1,11 +1,14 @@
+
 import sys, pathlib
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 from src.firebase import db
-from google.cloud.firestore_v1 import SERVER_TIMESTAMP
+from google.cloud import firestore
+
 import tkinter as tk
 from tkinter import messagebox
 
 def submit():
+    print(firestore.SERVER_TIMESTAMP)
     exer_name = exer_name_var.get()
     exer_desc = exer_desc_var.get()
     exer_muscle = exer_muscle_var.get()
@@ -20,13 +23,16 @@ def submit():
         "exer_name": exer_name,
         "muscle": exer_muscle,
         "type": exer_type,
-        "creation": SERVER_TIMESTAMP
+        "creation": firestore.SERVER_TIMESTAMP
     }
 
     try:
         db.collection("exercise").add(data)
         messagebox.showinfo("Siker", "Gyakorlat hozzáadva!")
-        root.destroy()
+        exer_name_var.set("")
+        exer_desc_var.set("")
+        exer_muscle_var.set("")
+        exer_type_var.set("")
     except Exception as e:
         messagebox.showerror("Hiba", f"Hiba történt: {e}")
 

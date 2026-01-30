@@ -1,0 +1,7 @@
+.cardcont{
+    width: 100%;
+    background-color: brown;
+    display: flex;
+    flex-wrap: wrap;
+    padding-bottom: 10%;
+}

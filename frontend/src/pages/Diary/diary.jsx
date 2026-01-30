@@ -42,6 +42,8 @@ export const Diary = () => {
         getUserDiary()
 
     }, [])
+    
+    console.log(diary.filter((item) => item.muscle == "Mell"))
 
     return (
         <>  

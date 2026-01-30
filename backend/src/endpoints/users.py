@@ -13,6 +13,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from typing import List
 from dotenv import load_dotenv
+from src.utils.get_streak import get_streak, get_total_workouts, get_weekly_prs
 
 load_dotenv()
 
@@ -63,7 +64,10 @@ def test_protected_route(current_user: dict = Depends(get_current_user)): #A tok
 
 
 @router.get("/me")
-def get_me(current_user: dict = Depends(get_current_user)):
+def get_me( current_user: dict = Depends(get_current_user),
+            streak : int = Depends(get_streak),
+            total_workouts : int = Depends(get_total_workouts),
+            prs  : int = Depends(get_weekly_prs)):
 
     # a users collectionból lekérjük azt a dokumentumot ahol a name key megegyezik a current user-el
     user_doc = db.collection("users").document(current_user["name"]).get()
@@ -76,7 +80,10 @@ def get_me(current_user: dict = Depends(get_current_user)):
             "user": user["name"],
             "age": user["age"],
             "email" : user["email"],
-            "exers": addedExer
+            "exers": addedExer,
+            "streak": streak,
+            "total_workouts" : total_workouts,
+            "weekly_prs" : prs
             }
 
 
@@ -222,7 +229,8 @@ def change_password(passes : ChangePassword, current_user: dict = Depends(get_cu
     hashed_password = bcrypt.hashpw(passes.new_password.encode(), bcrypt.gensalt()).decode()
     
     db.collection("users").document(current_user["name"]).update({"password" : hashed_password})
-    
+
+
 
 
 

@@ -51,6 +51,8 @@ export const BrowseExercises = () => {
         GetAllExercise();
     }, []);
 
+    console.log(exercises.filter((item) => item.muscle == "Mell"))
+
     // Ez a useffect azért kell hogy tudjuk figyelni amikor változik az exercise tömb akkor frissüljön az oldal is, mivel az előzőben még nem frissül
     useEffect(() => {
         console.log("Exercisek frissültek:", exercises);
@@ -70,6 +72,8 @@ export const BrowseExercises = () => {
             if (response.status === 200) {
                 setRes("Feladat sikeresen hozzá adva a naplódhoz")
                 alert("Feladat hozzá adva naplóhoz")
+                localStorage.removeItem("all_exercises");
+                localStorage.removeItem("all_exercises_timestamp");
             }
         }
 

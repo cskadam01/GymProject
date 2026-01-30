@@ -1,0 +1,45 @@
+.container{
+  position: relative;
+  overflow: hidden; /* ez kell, hogy a glow ne lógjon ki rondán */
+
+  height: 100px;
+  width: 45%;
+  margin-left: 2%;
+  margin-right: 2.6%;
+  margin-top: 10%;
+  border-radius: 12px;
+  border: 1px solid;
+  font-family: 'Manrope', system-ui, sans-serif;
+}
+
+.glow{
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  top: -120px;
+  right: -120px;
+  filter: blur(60px);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.content{
+  position: relative;
+  z-index: 1; /* content mindig a glow fölött legyen */
+  display: flex;
+  margin-top: 5%;
+}
+
+.right{
+  margin-left: auto; /* ez jobb, mint 50% */
+  margin-right: 5%;
+}
+
+
+.left{
+    margin-left: 5%;
+
+
+}
