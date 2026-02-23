@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
+from jose import jwt
 from pydantic import BaseModel
 import bcrypt
-from datetime import datetime
+from datetime import datetime, timezone
 import os
-from src.jwt_token import create_access_token, get_current_user
+from src.jwt_token import ALGORITHM, SECRET_KEY, create_access_token, create_refresh_token, get_current_user
 from src.firebase import db
 from fastapi.responses import Response
 from email.message import EmailMessage
@@ -53,6 +54,9 @@ class ForgottenPassword(BaseModel):
 class ChangePassword(BaseModel):
     old_password: str
     new_password: str
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
 
 @router.get("/test-protected")
 def test_protected_route(current_user: dict = Depends(get_current_user)): #A token. pyból lefuttatjuk a current_user metódust,
@@ -122,7 +126,17 @@ def login(user: LoginUser, response: Response, request : Request):
         
         
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Helytelen jelszó")
-    token = create_access_token({"sub" : user_data["name"]}) #itt meghívjuk a token.pyból a create_acess_tokent és beadjuk paraméternek a felhasználó nevét akinek "kiállítjuk"
+    access_token = create_access_token({"sub": user_data["name"]})
+
+    refresh_token, jti, refresh_exp = create_refresh_token({"sub": user_data["name"]})
+
+    db.collection("refresh-tokens").document(jti).set({
+                "jti": jti,
+                "sub": user_data["name"],
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "expires_at": refresh_exp.isoformat(),
+                "revoked": False,
+            }) #itt meghívjuk a token.pyból a create_acess_tokent és beadjuk paraméternek a felhasználó nevét akinek "kiállítjuk"
 
     data = {
         "name" : user_data["name"],
@@ -136,10 +150,14 @@ def login(user: LoginUser, response: Response, request : Request):
     
     print(f"{user_data['name']} bejelentkezett")
 
-    return {"message" : "Sikeres bejelentkezés",
-            "access_token" : token,
-            "name" : user_data["name"],
-            "email" : user_data["email"] }
+    return {
+    "message": "Sikeres bejelentkezés",
+    "access_token": access_token,
+    "refresh_token": refresh_token,
+    "name": user_data["name"],
+    "email": user_data["email"],
+    }
+
 
     
     
@@ -231,6 +249,53 @@ def change_password(passes : ChangePassword, current_user: dict = Depends(get_cu
     db.collection("users").document(current_user["name"]).update({"password" : hashed_password})
 
 
+
+
+@router.post("/refresh")
+def refresh_tokens(payload: RefreshRequest):
+    # 1) JWT decode + exp ellenőrzés (jwt.decode automatikusan dob ExpiredSignatureError-t)
+    try:
+        decoded = jwt.decode(payload.refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="A refresh token lejárt")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Érvénytelen refresh token")
+
+    # 2) típus ellenőrzés
+    if decoded.get("type") != "refresh":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Nem refresh token")
+
+    # 3) kötelező mezők
+    jti = decoded.get("jti")
+    sub = decoded.get("sub")
+    if not jti or not sub:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Hiányzó token adatok")
+
+    # 4) Firestore lookup
+    doc_ref = db.collection("refresh-tokens").document(jti)
+    doc = doc_ref.get()
+
+    if not doc.exists:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Ismeretlen refresh token")
+
+    token_row = doc.to_dict()
+
+    if token_row.get("revoked") is True:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="A refresh token vissza van vonva")
+
+    # 5) extra lejárat check Firestore alapján (nem kötelező, de jó)
+    expires_at_str = token_row.get("expires_at")
+    if expires_at_str:
+        expires_at = datetime.fromisoformat(expires_at_str.replace("Z", "+00:00"))
+        if datetime.now(timezone.utc) > expires_at:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="A refresh token lejárt (szerver)")
+
+    # 6) új access token kiállítás
+    new_access = create_access_token({"sub": sub})
+
+    return {
+        "access_token": new_access
+    }
 
 
 
