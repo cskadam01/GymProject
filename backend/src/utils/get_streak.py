@@ -54,6 +54,39 @@ def get_total_workouts(current_user : dict = Depends(get_current_user)):
 
     return(len(days))
 
+def get_total_workouts_days(current_user : dict = Depends(get_current_user)):
+    weekday = datetime.now().weekday()
+    current_time = datetime.now()
+    current_time = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+        
+
+    week_start = current_time - timedelta(days=weekday) 
+    week_end = week_start + timedelta(days=7)
+
+
+    data = []
+    try:
+        query = db.collection("diary_entries").where("user", "==", current_user["name"]).where("date", ">=", week_start).where("date", "<", week_end ).get()
+        
+        for doc in query:
+
+            data.append(doc.to_dict())
+
+    except Exception as e:
+        print("get_streak ERROR:", e)
+        raise
+    NAPOK = ["H", "K", "Sze", "Cs", "P", "Szo", "V"]
+
+    streak_days = set()
+  
+
+    for entries in data:
+        dates = entries["date"].date()
+        nap = NAPOK[dates.weekday()]
+        streak_days.add(nap)
+
+    return sorted(list(streak_days))
+
 def get_weekly_prs(current_user : dict = Depends(get_current_user)):
     weekday = datetime.now().weekday()
     current_time = datetime.now()

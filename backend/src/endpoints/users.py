@@ -13,7 +13,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from typing import List
 from dotenv import load_dotenv
-from src.utils.get_streak import get_streak, get_total_workouts, get_weekly_prs
+from src.utils.get_streak import get_streak, get_total_workouts, get_weekly_prs, get_total_workouts_days
 
 load_dotenv()
 
@@ -39,6 +39,9 @@ conf = ConnectionConfig(
 
 # class EmailSchema(BaseModel):
 #    email: List[EmailStr]
+
+class GoalValue(BaseModel):
+    value : int
 
 class LoginUser(BaseModel):
     name: str
@@ -67,7 +70,8 @@ def test_protected_route(current_user: dict = Depends(get_current_user)): #A tok
 def get_me( current_user: dict = Depends(get_current_user),
             streak : int = Depends(get_streak),
             total_workouts : int = Depends(get_total_workouts),
-            prs  : int = Depends(get_weekly_prs)):
+            prs  : int = Depends(get_weekly_prs),
+            days: set = Depends(get_total_workouts_days)):
 
     # a users collectionból lekérjük azt a dokumentumot ahol a name key megegyezik a current user-el
     user_doc = db.collection("users").document(current_user["name"]).get()
@@ -75,7 +79,8 @@ def get_me( current_user: dict = Depends(get_current_user),
     # Ha nincs a felhasznűlónak ilyen listája akkor egy öres lista hoszzát kéri le a hibát elkerülve
     # (ez a hiba már nem fordulhat elő, mert alapból üres listával regisztrálnak a tagok, de benne hagyom)
     addedExer  = len(user.get("saved_exercises", []))
-
+    days_list = list(days) if days is not None else []
+    print("napok: ", days)
     return {"message": "Sikeres azonosítás",
             "user": user["name"],
             "age": user["age"],
@@ -83,8 +88,21 @@ def get_me( current_user: dict = Depends(get_current_user),
             "exers": addedExer,
             "streak": streak,
             "total_workouts" : total_workouts,
-            "weekly_prs" : prs
+            "weekly_prs" : prs,
+            "days": days_list
             }
+
+
+
+@router.post("/set-goal")
+def set_goal(value : GoalValue, current_user : dict = Depends(get_current_user)):
+
+    
+
+    db.collection("user").document(current_user["name"].update(Goal_Weight))
+
+
+
 
 
 @router.post("/login")

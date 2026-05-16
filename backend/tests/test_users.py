@@ -19,3 +19,4 @@ def test_login_then_me():
 
     token_cookie = login_res.cookies.get("access_token") # A szerver által visszaküldött sütiből lekérdezzük az access_token-t
     
+    assert login_res.status_code == 200

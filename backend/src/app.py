@@ -16,12 +16,8 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-        allow_origins=[
-        "https://gymdatabase-129e2.web.app",
-        "http://localhost:5173"
-    ],
-  # vagy a saját domained
-    allow_credentials=True,  # ⬅⬅⬅ FONTOS: kell a sütikhez!
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -32,7 +28,6 @@ app.add_middleware(
 app.include_router(users.router)
 app.include_router(exercise.router)
 app.include_router(diary.router)
-
 
 
 
