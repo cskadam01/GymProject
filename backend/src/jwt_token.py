@@ -1,3 +1,4 @@
+import uuid
 from jose import jwt
 from datetime import datetime, timedelta, timezone
 import os
@@ -16,12 +17,16 @@ ALGORITHM = os.getenv("ALGORITHM")
 
 #----------------------Token Generálás----------------------
 
-def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=3)):
+ACCESS_EXPIRES = timedelta(minutes=45)
+
+def create_access_token(data: dict, expires_delta: timedelta = ACCESS_EXPIRES):
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + expires_delta
-    to_encode.update({"exp": expire})
-    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return token
+    to_encode.update({
+        "exp": expire,
+        "type": "access",
+    })
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 #----------------------Aktuális Bejelentkezett Felhasználó Lekérdezése----------------------
@@ -68,3 +73,20 @@ def get_current_user(request: Request, response: Response):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Érvénytelen vagy lejárt token"
         )
+    
+
+REFRESH_EXPIRES = timedelta(days=14)
+
+def create_refresh_token(data: dict, expires_delta: timedelta = REFRESH_EXPIRES):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + expires_delta
+    jti = str(uuid.uuid4())
+
+    to_encode.update({
+        "exp": expire,
+        "jti": jti,
+        "type": "refresh",
+    })
+
+    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return token, jti, expire
