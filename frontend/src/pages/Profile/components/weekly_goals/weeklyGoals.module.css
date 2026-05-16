@@ -1,0 +1,20 @@
+.weeklyGoalCard{
+    background-color: #0B0D14;
+    width: 95%;
+    margin-left: 2.5%;
+    border-radius: 15px;
+    border: 1px solid #404040;
+    padding-bottom: 5%;
+    margin-bottom: 20px;
+}
+
+.weeklyGoalCard h3{
+    padding-top: 5%;
+    margin-left: 10%;
+    color: #D6D9E6;
+    font-size: "Hansen Grotesk";
+
+    
+    
+
+}

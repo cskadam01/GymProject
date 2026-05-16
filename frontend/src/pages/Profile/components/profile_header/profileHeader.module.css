@@ -1,0 +1,64 @@
+.prof-head-container{
+    background-color: #4bd913;
+    border: 1px #25252f solid;
+    height: 24vh;
+    width: 95%;
+    background-color: #0B0D14;
+    border-radius: 15px;
+    margin-left: 2%;
+    margin-top: 10%;
+    position: relative;
+    overflow: hidden;
+}
+
+.prof-head-cont{
+    position: relative;
+    color: aliceblue;
+    font-size: 1.8rem;
+    margin-left: 30px;
+    margin-top: 23px;
+    z-index: 1;
+
+
+}
+
+
+.glow{
+    overflow: hidden;
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    right: 10%;
+    
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 1.85;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+.prof-head-cont h4{
+   
+    margin-left: 10%;
+    font-family: "Goldman";
+    font-weight: 300;
+    
+}
+
+.prof-head-cont p{
+        font-size: 1.2rem;
+        margin-left:0% ;
+        margin-right: 10%;
+        margin-top: 5%;
+        font-family: "Gowun Dodum";
+        color: #9AA0B4;
+        font-weight: 100;
+
+}
+.prof-head-cont h5 {
+    margin-left: 10%;
+    font-family: "Goldman";
+    font-weight: 400;
+    color: #9AA0B4;
+
+}

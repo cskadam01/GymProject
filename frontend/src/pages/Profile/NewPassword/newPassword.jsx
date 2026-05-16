@@ -8,7 +8,7 @@ export const NewPassword = () =>{
     const [message, setMessage] = useState("")
     const [result, setResult] = useState(null)
     const [newPassCheck, setNewPassCheck] = useState("")
-
+    
 
 
     const HandleNewPass = async() =>{
