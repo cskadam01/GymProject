@@ -67,11 +67,12 @@ def get_current_user(request: Request, response: Response):
 
         return {"name": username}
 
-    except JWTError:
+    except JWTError as e:
         print("Token decode error:", e)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Érvénytelen vagy lejárt token"
+
         )
     
 
