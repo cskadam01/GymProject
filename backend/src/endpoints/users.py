@@ -1,325 +1,100 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from jose import jwt
-from pydantic import BaseModel
-import bcrypt
-from datetime import datetime, timezone
-import os
-from src.jwt_token import ALGORITHM, SECRET_KEY, create_access_token, create_refresh_token, get_current_user
-from src.firebase import db
-from fastapi.responses import Response
-from email.message import EmailMessage
-import secrets
-from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
-from starlette.requests import Request
-from starlette.responses import JSONResponse
-from typing import List
-from dotenv import load_dotenv
-from src.utils.get_streak import get_streak, get_total_workouts, get_weekly_prs, get_total_workouts_days
+from fastapi import APIRouter, Depends, Request
 
-load_dotenv()
-
+from src.jwt_token import get_current_user
+from src.rate_limit import enforce_rate_limit
+from src.schemas.user import (
+    ChangePassword,
+    ForgottenPassword,
+    GoalValue,
+    LoginUser,
+    PasswordResetConfirm,
+    RefreshRequest,
+    RegisterUser,
+)
+from src.services.user_service import (
+    change_user_password,
+    confirm_password_reset,
+    get_user_profile,
+    login_user,
+    refresh_access_token,
+    register_user,
+    send_forgotten_password_email,
+    set_user_goal,
+)
+from src.utils.get_streak import get_streak, get_total_workouts, get_total_workouts_days, get_weekly_prs
 
 router = APIRouter(
     prefix="/users",
-    tags=["Users"]
+    tags=["Users"],
 )
 
-
-conf = ConnectionConfig(
-    MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
-    MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
-    MAIL_FROM=os.getenv("MAIL_FROM"),
-    MAIL_PORT=int(os.getenv("MAIL_PORT")),
-    MAIL_SERVER=os.getenv("MAIL_SERVER"),
-    MAIL_STARTTLS=os.getenv("MAIL_STARTTLS") == "True",
-    MAIL_SSL_TLS=os.getenv("MAIL_SSL_TLS") == "True",
-    USE_CREDENTIALS=os.getenv("USE_CREDENTIALS") == "True"
-)
-
-#------------------- ITT TALÁLHATÓAK AZ AUTENTIKÁCÓ ÉS FELHASZNÁLÓKKAL KAPCSOLATOS ENDPOINTOK -------------------------
-
-# class EmailSchema(BaseModel):
-#    email: List[EmailStr]
-
-class GoalValue(BaseModel):
-    value : int
-
-class LoginUser(BaseModel):
-    name: str
-    password: str
-class RegisterUser(LoginUser):
-    email: str
-    age: int
-
-class ForgottenPassword(BaseModel):
-    user_name: str
-
-class ChangePassword(BaseModel):
-    old_password: str
-    new_password: str
-
-class RefreshRequest(BaseModel):
-    refresh_token: str
 
 @router.get("/test-protected")
-def test_protected_route(current_user: dict = Depends(get_current_user)): #A token. pyból lefuttatjuk a current_user metódust,
-    return {"message": f"Be vagy jelentkezve, {current_user['name']}!"}   # a depends azt csuinálja hogy mielött lefutna az api elötte fusson le a current_user
-                                                                          # majd a current_user vissza adja dict-ként a nevet
-    
-
-
+def test_protected_route(current_user: dict = Depends(get_current_user)):
+    return {"message": f"Be vagy jelentkezve, {current_user['name']}!"}
 
 
 @router.get("/me")
-def get_me( current_user: dict = Depends(get_current_user),
-            streak : int = Depends(get_streak),
-            total_workouts : int = Depends(get_total_workouts),
-            prs  : int = Depends(get_weekly_prs),
-            days: set = Depends(get_total_workouts_days)):
-
-    # a users collectionból lekérjük azt a dokumentumot ahol a name key megegyezik a current user-el
-    user_doc = db.collection("users").document(current_user["name"]).get()
-    user = user_doc.to_dict()
-    # Ha nincs a felhasznűlónak ilyen listája akkor egy öres lista hoszzát kéri le a hibát elkerülve
-    # (ez a hiba már nem fordulhat elő, mert alapból üres listával regisztrálnak a tagok, de benne hagyom)
-    addedExer  = len(user.get("saved_exercises", []))
-    days_list = list(days) if days is not None else []
-    print("napok: ", days)
-    return {"message": "Sikeres azonosítás",
-            "user": user["name"],
-            "age": user["age"],
-            "email" : user["email"],
-            "exers": addedExer,
-            "streak": streak,
-            "total_workouts" : total_workouts,
-            "weekly_prs" : prs,
-            "days": days_list
-            }
-
+def get_me(
+    current_user: dict = Depends(get_current_user),
+    streak: int = Depends(get_streak),
+    total_workouts: int = Depends(get_total_workouts),
+    prs: int = Depends(get_weekly_prs),
+    days: set = Depends(get_total_workouts_days),
+):
+    return get_user_profile(current_user["name"], streak, total_workouts, prs, days)
 
 
 @router.post("/set-goal")
-def set_goal(value : GoalValue, current_user : dict = Depends(get_current_user)):
-
-    
-
-    db.collection("user").document(current_user["name"].update(Goal_Weight))
-
-
-
+def set_goal(value: GoalValue, current_user: dict = Depends(get_current_user)):
+    return set_user_goal(value, current_user["name"])
 
 
 @router.post("/login")
-def login(user: LoginUser, response: Response, request : Request):
-    db_user = db.collection("users").where("name", "==", user.name).get()
+def login(request: Request, user: LoginUser):
+    enforce_rate_limit(request, "login-ip", limit=10, window_seconds=60)
+    enforce_rate_limit(request, "login-user", limit=5, window_seconds=300, identifier=user.name.lower())
+    return login_user(user, request)
 
-    
-
-    if not db_user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Helytelen felhasználónév")
-    
-    user_data = db_user[0].to_dict() # Az első eredményt vissza kapjuk és a json filet átalakítjuk python .todict() metódussal hogy tudj
-    
-
-
-
-    client_ip = request.client.host #Kliens ip lekérdezése
-    now = datetime.utcnow().isoformat() #pontos idő lekérése
-    doc_id = f"{now} {user_data['name']}" #dokumetnum id generálás idő és név alapján
-
-
-
-    if not bcrypt.checkpw   (user.password.encode("utf-8"), user_data["password"].encode("utf-8")): #aa beírt jelszót titkosítja majd össze hasonlítja a firestoreból kapott haselt jelszóval és ha nem egyezik meg hibát dob
-        error_data = {
-            
-                "name" : user_data["name"],
-                "time" : now,
-                "ip" : client_ip,
-                "status" : "failed",
-                "reason" : "wrong_pass"
-            
-
-        }
-        db.collection("login-logs").document(doc_id).set(error_data)
-        
-        
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Helytelen jelszó")
-    access_token = create_access_token({"sub": user_data["name"]})
-
-    refresh_token, jti, refresh_exp = create_refresh_token({"sub": user_data["name"]})
-
-    db.collection("refresh-tokens").document(jti).set({
-                "jti": jti,
-                "sub": user_data["name"],
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "expires_at": refresh_exp.isoformat(),
-                "revoked": False,
-            }) #itt meghívjuk a token.pyból a create_acess_tokent és beadjuk paraméternek a felhasználó nevét akinek "kiállítjuk"
-
-    data = {
-        "name" : user_data["name"],
-        "time" : now,
-        "ip" : client_ip,
-        "status" : "success"
-    }
-
-
-    db.collection("login-logs").document(doc_id).set(data) #betesszük a "login-logs" collectionbe az elöbb megadott dokumentumot
-    
-    print(f"{user_data['name']} bejelentkezett")
-
-    return {
-    "message": "Sikeres bejelentkezés",
-    "access_token": access_token,
-    "refresh_token": refresh_token,
-    "name": user_data["name"],
-    "email": user_data["email"],
-    }
-
-
-    
-    
 
 @router.post("/register")
-def register(user: RegisterUser):
-    # Megnézzük, van-e már ilyen név (azonos nevű dokumentum = konfliktus)
-    user_ref = db.collection("users").document(user.name)
-    if user_ref.get().exists:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Foglalt felhasználónév")
-
-    hashed_password = bcrypt.hashpw(user.password.encode(), bcrypt.gensalt()).decode()
-
-    data = {
-        "name": user.name,
-        "age": user.age,
-        "password": hashed_password,
-        "email": user.email,
-        "saved_exercises": []
-    }
-
-    # Dokumentum hozzáadása konkrét névvel
-    user_ref.set(data)
-
-    return {"success": f"{user.name} sikeresen regisztrálva"}
+def register(request: Request, user: RegisterUser):
+    enforce_rate_limit(request, "register-ip", limit=5, window_seconds=3600)
+    return register_user(user)
 
 
 @router.post("/forgotten-passoword")
-async def forgotten_password(user: ForgottenPassword, ):
-
-    #kikeressük a felhasználót név alapján
-    user_ref = db.collection("users").where("name", "==", user.user_name).get()
-    if not user_ref:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Nincs ilyen e-mail című felhasználó")
-    
-    user_data = user_ref[0].to_dict()
-
-    #generálunk egy új jelszót
-    password_length = 13
-    new_pass = secrets.token_urlsafe(password_length)
-
-    #leváltjuk az új jelszóra a régit
-    hashed_password = bcrypt.hashpw(new_pass.encode(), bcrypt.gensalt()).decode()
-    db.collection("users").document(user_data["name"]).update({"password": hashed_password})
-
-
-    #Email megyrása
-    template = f"""
-    <html>
-        <body>
-            <h1>Kedves {user_data['name']}!</h1>
-            <h3>Úgy tűnik, hogy a FluxNote-on új jelszót kértél!</h3>
-
-            <p>Elküldük az új jelszavad, amit kérünk, hogy bejelentkezés után változtass meg a profilodon!</p>
-            <h2>Új jelszavad:</h2>
-            <p>{new_pass}</p>
-    
-            <p>Ha nem te kérted az új jelszót, akkor ezt az e-mailt figyelmen kívül hagyhatod.</p>
-        </body>
-    </html>
-
- """
-    
-    #email küldése
-    message = MessageSchema(
-       subject="Fastapi-Mail module",
-       recipients= [user_data['email']], # List of recipients, as many as you can pass
-       body=template,
-       subtype="html"
-       )
-
-
-    fm = FastMail(conf)
-    await fm.send_message(message)
-    return {"success": "Email elküldve"}
+async def forgotten_password(request: Request, user: ForgottenPassword):
+    enforce_rate_limit(request, "forgot-password-ip", limit=3, window_seconds=900)
+    enforce_rate_limit(
+        request,
+        "forgot-password-user",
+        limit=3,
+        window_seconds=3600,
+        identifier=user.user_name.lower(),
+    )
+    return await send_forgotten_password_email(user)
 
 
 @router.post("/change-password")
-def change_password(passes : ChangePassword, current_user: dict = Depends(get_current_user)):
-    db_user = db.collection("users").where("name", "==", current_user['name']).get()
-    use_ref = db_user[0].to_dict()
+def change_password(request: Request, passes: ChangePassword, current_user: dict = Depends(get_current_user)):
+    enforce_rate_limit(
+        request,
+        "change-password-user",
+        limit=5,
+        window_seconds=900,
+        identifier=current_user["name"].lower(),
+    )
+    return change_user_password(passes, current_user["name"])
 
 
-    if not bcrypt.checkpw   (passes.old_password.encode("utf-8"), use_ref["password"].encode("utf-8")): #aa beírt jelszót titkosítja majd össze hasonlítja a firestoreból kapott haselt jelszóval
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Helytelen jelszó")
-    
-    hashed_password = bcrypt.hashpw(passes.new_password.encode(), bcrypt.gensalt()).decode()
-    
-    db.collection("users").document(current_user["name"]).update({"password" : hashed_password})
-
-
+@router.post("/reset-password")
+def reset_password(request: Request, payload: PasswordResetConfirm):
+    enforce_rate_limit(request, "reset-password-ip", limit=5, window_seconds=900)
+    return confirm_password_reset(payload)
 
 
 @router.post("/refresh")
-def refresh_tokens(payload: RefreshRequest):
-    # 1) JWT decode + exp ellenőrzés (jwt.decode automatikusan dob ExpiredSignatureError-t)
-    try:
-        decoded = jwt.decode(payload.refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="A refresh token lejárt")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Érvénytelen refresh token")
-
-    # 2) típus ellenőrzés
-    if decoded.get("type") != "refresh":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Nem refresh token")
-
-    # 3) kötelező mezők
-    jti = decoded.get("jti")
-    sub = decoded.get("sub")
-    if not jti or not sub:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Hiányzó token adatok")
-
-    # 4) Firestore lookup
-    doc_ref = db.collection("refresh-tokens").document(jti)
-    doc = doc_ref.get()
-
-    if not doc.exists:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Ismeretlen refresh token")
-
-    token_row = doc.to_dict()
-
-    if token_row.get("revoked") is True:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="A refresh token vissza van vonva")
-
-    # 5) extra lejárat check Firestore alapján (nem kötelező, de jó)
-    expires_at_str = token_row.get("expires_at")
-    if expires_at_str:
-        expires_at = datetime.fromisoformat(expires_at_str.replace("Z", "+00:00"))
-        if datetime.now(timezone.utc) > expires_at:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="A refresh token lejárt (szerver)")
-
-    # 6) új access token kiállítás
-    new_access = create_access_token({"sub": sub})
-
-    return {
-        "access_token": new_access
-    }
-
-
-
-    
-    
-
-
-
-    
+def refresh_tokens(request: Request, payload: RefreshRequest):
+    enforce_rate_limit(request, "refresh-ip", limit=30, window_seconds=60)
+    return refresh_access_token(payload)

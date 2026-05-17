@@ -1,19 +1,25 @@
+import os
 import uuid
-from jose import jwt
 from datetime import datetime, timedelta, timezone
-import os
-from dotenv import load_dotenv
-from fastapi import Request, HTTPException, status, Response
-from jose import jwt, JWTError
-import os
-from fastapi.responses import Response
 
+from dotenv import load_dotenv
+from fastapi import HTTPException, Request, status
+from jose import JWTError, jwt
 
 
 load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+
+if not SECRET_KEY:
+    raise RuntimeError("Hiányzik a SECRET_KEY környezeti változó.")
+
+if len(SECRET_KEY) < 32:
+    raise RuntimeError("A SECRET_KEY legyen legalább 32 karakter hosszú.")
+
+if ALGORITHM not in {"HS256", "HS384", "HS512"}:
+    raise RuntimeError("Nem támogatott JWT algoritmus. Használj HS256/HS384/HS512 értéket.")
 
 #----------------------Token Generálás----------------------
 
@@ -31,48 +37,32 @@ def create_access_token(data: dict, expires_delta: timedelta = ACCESS_EXPIRES):
 
 #----------------------Aktuális Bejelentkezett Felhasználó Lekérdezése----------------------
 
-def get_current_user(request: Request, response: Response):
-    auth_header = request.headers.get("Authorization")  #lekéri a kiküldött tokent, amikor ai hívás történik a frontend elküldi a sutit és onnan olvassa ki
-    print("Authorization header:", auth_header)
-
-
+def get_current_user(request: Request):
+    auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Nincs bejelentkezve"
         )              
-    token = auth_header.split(" ")[1]                          #ha nincs akkor hibát küld
+    token = auth_header.split(" ", 1)[1]
 
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM]) #decodolja a tokent és elmenti a payloadba
-        print("Token payload:", payload)  
-        username: str = payload.get("sub")  #a payloadból kiolvassuk a felhasználónevet
-        token_time = datetime.fromtimestamp(payload.get("exp"), tz=timezone.utc)  #lekérjük hogy mennyi idő mire lejár, és átalakítjuk olvasható időre
-        now = datetime.now(timezone.utc)  #meghatározzuk a jelenlegi időt
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str | None = payload.get("sub")
+        token_type: str | None = payload.get("type")
 
-        expire_time = token_time-now  #megkapjuk a hogy hány óra van hátra az életéből, hogy a lejárati dátumot kivonjuk a mostani dátumból
-
-
-        print("token time: ", token_time)
-        if username is None:
+        if username is None or token_type != "access":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Érvénytelen token"
-            ) #Ha nincs felhasználónév akkor nem érvénes a token
-
-
-       
-
-       
+            )
 
         return {"name": username}
 
-    except JWTError as e:
-        print("Token decode error:", e)
+    except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Érvénytelen vagy lejárt token"
-
         )
     
 

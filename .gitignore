@@ -7,5 +7,10 @@ backend/env/
 .DS_Store
 Thumbs.db
 .env
+*.env
+backend/sa.b64.txt
+*.b64.txt
+*.db
+*firebase-adminsdk*.json
 gymdatabase-129e2-firebase-adminsdk-fbsvc-f4d145d2ff.json
 
