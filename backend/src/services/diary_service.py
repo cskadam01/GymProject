@@ -29,12 +29,22 @@ def _require_saved_exercise(username: str, exercise_id: str):
     return user_doc
 
 
-def get_saved_exercises(username: str):
+def get_saved_exercises(username: str, limit: int = 20, cursor: int | None = None):
+    offset = cursor or 0
+    page_size = min(max(limit, 1), 50)
     user_doc = _get_user(username)
     user = user_doc.to_dict()
     saved_ids = user.get("saved_exercises", [])
+    page_ids = saved_ids[offset : offset + page_size]
 
-    doc_refs = [db.collection("exercise").document(doc_id) for doc_id in saved_ids]
+    if not page_ids:
+        return {
+            "items": [],
+            "next_cursor": None,
+            "has_more": False,
+        }
+
+    doc_refs = [db.collection("exercise").document(doc_id) for doc_id in page_ids]
     docs = db.get_all(doc_refs)
 
     saves = []
@@ -44,7 +54,14 @@ def get_saved_exercises(username: str):
             data["id"] = doc.id
             saves.append(data)
 
-    return saves
+    next_offset = offset + len(page_ids)
+    has_more = next_offset < len(saved_ids)
+
+    return {
+        "items": saves,
+        "next_cursor": next_offset if has_more else None,
+        "has_more": has_more,
+    }
 
 
 def save_exercise_to_diary(exercise: ExerId, username: str):

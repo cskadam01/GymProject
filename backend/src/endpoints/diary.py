@@ -19,9 +19,13 @@ router = APIRouter(
 
 
 @router.get("/user-diary")
-def get_saved_exer(current_user: dict = Depends(get_current_user)):
+def get_saved_exer(
+    limit: int = Query(20, ge=1, le=50),
+    cursor: int | None = Query(None, ge=0),
+    current_user: dict = Depends(get_current_user),
+):
     try:
-        return get_saved_exercises(current_user["name"])
+        return get_saved_exercises(current_user["name"], limit=limit, cursor=cursor)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
