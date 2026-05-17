@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
 from src.jwt_token import get_current_user
 from src.rate_limit import enforce_rate_limit
@@ -12,9 +12,13 @@ router = APIRouter(
 
 
 @router.get("/get-all-exercise")
-def get_all_exercise(current_user: dict = Depends(get_current_user)):
+def get_all_exercise(
+    limit: int = Query(20, ge=1, le=50),
+    cursor: int | None = Query(None, ge=0),
+    current_user: dict = Depends(get_current_user),
+):
     try:
-        return get_all_exercises_for_user(current_user["name"])
+        return get_all_exercises_for_user(current_user["name"], limit=limit, cursor=cursor)
     except HTTPException:
         raise
     except Exception as e:

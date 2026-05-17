@@ -5,8 +5,16 @@ from src.firebase import db
 from src.schemas.exercise import AddExercise
 
 
-def get_all_exercises_for_user(username: str):
-    docs = db.collection("exercise").get()
+def get_all_exercises_for_user(username: str, limit: int = 20, cursor: int | None = None):
+    offset = cursor or 0
+    page_size = min(max(limit, 1), 50)
+    docs = (
+        db.collection("exercise")
+        .order_by("exer_name")
+        .offset(offset)
+        .limit(page_size + 1)
+        .stream()
+    )
     exercises = []
 
     user_doc = db.collection("users").document(username).get()
@@ -16,13 +24,22 @@ def get_all_exercises_for_user(username: str):
     user = user_doc.to_dict()
     saved = user.get("saved_exercises", [])
 
-    for doc in docs:
+    docs_list = list(docs)
+    page_docs = docs_list[:page_size]
+
+    for doc in page_docs:
         data = doc.to_dict()
         data["id"] = doc.id
         data["saved"] = data["id"] in saved
         exercises.append(data)
 
-    return exercises
+    has_more = len(docs_list) > page_size
+
+    return {
+        "items": exercises,
+        "next_cursor": offset + len(page_docs) if has_more else None,
+        "has_more": has_more,
+    }
 
 
 def add_exercise(exercise_data: AddExercise, username: str):
