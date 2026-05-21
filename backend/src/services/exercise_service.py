@@ -52,6 +52,9 @@ def add_exercise(exercise_data: AddExercise, username: str):
         "creation": SERVER_TIMESTAMP,
     }
 
+    if exercise_data.e_type == "Gép" and exercise_data.machine_brand:
+        exercise["machine_brand"] = exercise_data.machine_brand
+
     db.collection("exercise").add(exercise)
     return {"message": f"{exercise_data.name} Sikeresen hozzáadva!"}
 
