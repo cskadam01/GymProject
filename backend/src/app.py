@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 
-from src.endpoints import diary, exercise, users
+from src.endpoints import diary, exercise, users, workout_plans
 from src.rate_limit import enforce_rate_limit
 
 app = FastAPI()
@@ -66,7 +66,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=_parse_cors_origins(),
     allow_credentials=False,
-    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
 
@@ -74,3 +74,4 @@ app.add_middleware(
 app.include_router(users.router)
 app.include_router(exercise.router)
 app.include_router(diary.router)
+app.include_router(workout_plans.router)
