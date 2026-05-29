@@ -10,7 +10,7 @@ ExerciseName = Annotated[str, StringConstraints(strip_whitespace=True, min_lengt
 class NewSave(BaseModel):
     exer_id: FirestoreId
     exerName: ExerciseName
-    weight: int = Field(ge=0, le=1000)
+    weight: float = Field(ge=0, le=1000)
     reps: int = Field(ge=1, le=1000)
 
 
