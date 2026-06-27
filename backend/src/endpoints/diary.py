@@ -7,6 +7,7 @@ from src.services.diary_service import (
     add_diary_record,
     delete_diary_entry as delete_diary_entry_service,
     get_entries_by_exercise,
+    get_progress_summary,
     get_saved_exercises,
     is_exercise_authorized as is_exercise_authorized_service,
     save_exercise_to_diary,
@@ -68,6 +69,13 @@ def get_diary_entries_by_exercise(
     exercise_id: str = Query(...), current_user: dict = Depends(get_current_user)
 ):
     return get_entries_by_exercise(exercise_id, current_user["name"])
+
+
+@router.get("/progress-summary")
+def get_diary_progress_summary(
+    exercise_id: str = Query(...), current_user: dict = Depends(get_current_user)
+):
+    return get_progress_summary(exercise_id, current_user["name"])
 
 
 @router.get("/is-authorized")
