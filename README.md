@@ -1,4 +1,4 @@
-# Kondi Haladás Napló || Fluxe Note
+# Kondi Haladás Napló || Flux Note
 
 ### Az app célja:
 Egy olyan webapp létrehozása amivel könnyedén lehet követni, hogy milyen teljesítményt értünk el konditermi súlyzós edzéseinken.
