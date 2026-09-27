@@ -16,3 +16,14 @@ class NewSave(BaseModel):
 
 class ExerId(BaseModel):
     exerciseID: FirestoreId
+
+
+class WorkoutSet(BaseModel):
+    weight: float = Field(gt=0, le=1000)
+    reps: int = Field(ge=1, le=1000)
+
+
+class NewWorkout(BaseModel):
+    exercise_id: FirestoreId
+    sets: list[WorkoutSet] = Field(min_length=1, max_length=20)
+    note: str = Field(default="", max_length=500)

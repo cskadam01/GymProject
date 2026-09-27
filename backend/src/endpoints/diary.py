@@ -2,14 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
 from src.jwt_token import get_current_user
 from src.rate_limit import enforce_rate_limit
-from src.schemas.diary import ExerId, NewSave
+from src.schemas.diary import ExerId, NewSave, NewWorkout
 from src.services.diary_service import (
     add_diary_record,
+    add_workout,
+    get_activity,
     delete_diary_entry as delete_diary_entry_service,
     get_entries_by_exercise,
     get_progress_summary,
     get_saved_exercises,
     is_exercise_authorized as is_exercise_authorized_service,
+    remove_saved_exercise,
     save_exercise_to_diary,
 )
 
@@ -49,6 +52,11 @@ def save_to_diary(request: Request, exer: ExerId, current_user: dict = Depends(g
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Naplózás sikertelen: {e}")
 
 
+@router.delete("/saved/{exercise_id}")
+def remove_from_diary(exercise_id: str, current_user: dict = Depends(get_current_user)):
+    return remove_saved_exercise(exercise_id, current_user["name"])
+
+
 @router.post("/add-new-record")
 def add_new_record(request: Request, task: NewSave, current_user: dict = Depends(get_current_user)):
     enforce_rate_limit(
@@ -62,6 +70,26 @@ def add_new_record(request: Request, task: NewSave, current_user: dict = Depends
         return add_diary_record(task, current_user["name"])
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Szett rögzítése sikertelen {e}")
+
+
+@router.post("/workouts", status_code=status.HTTP_201_CREATED)
+def create_workout(request: Request, workout: NewWorkout, current_user: dict = Depends(get_current_user)):
+    enforce_rate_limit(
+        request,
+        "add-workout-user",
+        limit=60,
+        window_seconds=3600,
+        identifier=current_user["name"].lower(),
+    )
+    return add_workout(workout, current_user["name"])
+
+
+@router.get("/activity")
+def get_workout_activity(
+    days: int = Query(182, ge=7, le=366),
+    current_user: dict = Depends(get_current_user),
+):
+    return get_activity(current_user["name"], days)
 
 
 @router.get("/by-exercise")

@@ -90,6 +90,7 @@ def get_user_profile(username: str, streak: int, total_workouts: int, prs: int, 
         "total_workouts": total_workouts,
         "weekly_prs": prs,
         "days": days_list,
+        "coach_id": user.get("coach_id"),
     }
 
 
@@ -322,3 +323,20 @@ def refresh_access_token(payload: RefreshRequest):
         "access_token": create_access_token({"sub": sub}),
         "refresh_token": refresh_token,
     }
+
+
+def logout_user(refresh_token: str, username: str):
+    try:
+        decoded = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+    except JWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Érvénytelen refresh token")
+
+    if decoded.get("type") != "refresh" or decoded.get("sub") != username or not decoded.get("jti"):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Érvénytelen refresh token")
+
+    ref = db.collection("refresh-tokens").document(decoded["jti"])
+    token_doc = ref.get()
+    if not token_doc.exists or (token_doc.to_dict() or {}).get("sub") != username:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Ismeretlen refresh token")
+    ref.update({"revoked": True, "revoked_at": datetime.now(timezone.utc).isoformat()})
+    return {"message": "Sikeres kijelentkezés"}

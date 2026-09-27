@@ -16,6 +16,7 @@ from src.services.user_service import (
     confirm_password_reset,
     get_user_profile,
     login_user,
+    logout_user,
     refresh_access_token,
     register_user,
     send_forgotten_password_email,
@@ -98,3 +99,8 @@ def reset_password(request: Request, payload: PasswordResetConfirm):
 def refresh_tokens(request: Request, payload: RefreshRequest):
     enforce_rate_limit(request, "refresh-ip", limit=30, window_seconds=60)
     return refresh_access_token(payload)
+
+
+@router.post("/logout")
+def logout(payload: RefreshRequest, current_user: dict = Depends(get_current_user)):
+    return logout_user(payload.refresh_token, current_user["name"])
