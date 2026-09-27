@@ -1,10 +1,6 @@
-<<<<<<< Updated upstream
-from datetime import datetime, timezone
-=======
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 from zoneinfo import ZoneInfo
->>>>>>> Stashed changes
 
 from fastapi import HTTPException
 from google.cloud import firestore
@@ -28,15 +24,19 @@ REP_RANGES = [
 
 def _get_user(username: str):
     user_doc = db.collection("users").document(username).get()
+
     if not user_doc.exists:
         raise HTTPException(status_code=404, detail="Felhasználó nem található")
+
     return user_doc
 
 
 def _get_exercise(exercise_id: str):
     exercise_doc = db.collection("exercise").document(exercise_id).get()
+
     if not exercise_doc.exists:
         raise HTTPException(status_code=404, detail="Feladat nem található")
+
     return exercise_doc
 
 
@@ -44,8 +44,13 @@ def _require_saved_exercise(username: str, exercise_id: str):
     user_doc = _get_user(username)
     user = user_doc.to_dict()
     saved_ids = user.get("saved_exercises", [])
+
     if exercise_id not in saved_ids:
-        raise HTTPException(status_code=403, detail="Nincs jogosultságod ehhez a feladathoz")
+        raise HTTPException(
+            status_code=403,
+            detail="Nincs jogosultságod ehhez a feladathoz",
+        )
+
     return user_doc
 
 
@@ -67,8 +72,10 @@ def _get_diary_entry_counts(username: str, exercise_ids: list[str]):
 def get_saved_exercises(username: str, limit: int = 20, cursor: int | None = None):
     offset = cursor or 0
     page_size = min(max(limit, 1), 50)
+
     user_doc = _get_user(username)
     user = user_doc.to_dict()
+
     saved_ids = user.get("saved_exercises", [])
     page_ids = saved_ids[offset : offset + page_size]
 
@@ -81,9 +88,11 @@ def get_saved_exercises(username: str, limit: int = 20, cursor: int | None = Non
 
     doc_refs = [db.collection("exercise").document(doc_id) for doc_id in page_ids]
     docs = db.get_all(doc_refs)
+
     diary_entry_counts = _get_diary_entry_counts(username, page_ids)
 
     saves = []
+
     for doc in docs:
         if doc.exists:
             data = doc.to_dict()
@@ -103,21 +112,30 @@ def get_saved_exercises(username: str, limit: int = 20, cursor: int | None = Non
 
 def save_exercise_to_diary(exercise: ExerId, username: str):
     _get_exercise(exercise.exerciseID)
+
     user_doc = _get_user(username)
     user_ref = user_doc.reference
 
-    user_ref.update({"saved_exercises": firestore.ArrayUnion([exercise.exerciseID])})
+    user_ref.update(
+        {"saved_exercises": firestore.ArrayUnion([exercise.exerciseID])}
+    )
+
     return {"success": "Feladat hozzá adva a naplóhoz"}
 
 
 def remove_saved_exercise(exercise_id: str, username: str):
     user_ref = _get_user(username).reference
-    user_ref.update({"saved_exercises": firestore.ArrayRemove([exercise_id])})
+
+    user_ref.update(
+        {"saved_exercises": firestore.ArrayRemove([exercise_id])}
+    )
+
     return {"message": "Gyakorlat eltávolítva a naplóból"}
 
 
 def add_diary_record(task: NewSave, username: str):
     _require_saved_exercise(username, task.exer_id)
+
     exercise_doc = _get_exercise(task.exer_id)
     exercise = exercise_doc.to_dict()
 
@@ -131,10 +149,10 @@ def add_diary_record(task: NewSave, username: str):
     }
 
     db.collection("diary_entries").add(data)
+
     return {"message": "Sikeres naplózás"}
 
 
-<<<<<<< Updated upstream
 def _to_number(value, fallback: float = 0):
     if isinstance(value, (int, float)):
         return value
@@ -206,6 +224,7 @@ def _entry_month_sort_value(entry: dict):
 def _estimate_one_rep_max(entry: dict):
     weight = _to_number(entry.get("weight"))
     reps = _to_number(entry.get("rep"))
+
     return round(weight * (1 + reps / 30))
 
 
@@ -229,74 +248,115 @@ def _entry_range(entry: dict):
 
 
 def _load_entries_by_exercise(exercise_id: str, username: str):
-=======
-def add_workout(workout: NewWorkout, username: str):
-    _require_saved_exercise(username, workout.exercise_id)
-    exercise = _get_exercise(workout.exercise_id).to_dict() or {}
-    created_at = datetime.now(timezone.utc)
-    workout_id = str(uuid4())
-    batch = db.batch()
-    for index, item in enumerate(workout.sets):
-        ref = db.collection("diary_entries").document()
-        batch.set(ref, {
-            "user": username,
-            "task_id": workout.exercise_id,
-            "exer_name": exercise.get("exer_name", ""),
-            "rep": item.reps,
-            "weight": item.weight,
-            "date": created_at,
-            "workout_id": workout_id,
-            "set_index": index,
-            "note": workout.note.strip(),
-        })
-    batch.commit()
-    return {"workout_id": workout_id, "sets_saved": len(workout.sets)}
-
-
-def get_activity(username: str, days: int = 182):
-    local_zone = ZoneInfo("Europe/Budapest")
-    today = datetime.now(local_zone).date()
-    end = today + timedelta(days=6 - today.weekday())
-    start = end - timedelta(days=days - 1)
-    query = db.collection("diary_entries").where("user", "==", username)
-    counts: dict[str, int] = {}
-    recent: list[dict] = []
-    for doc in query.stream():
-        entry = doc.to_dict() or {}
-        recorded = entry.get("date")
-        if not isinstance(recorded, datetime):
-            continue
-        day = recorded.astimezone(local_zone).date().isoformat()
-        if start.isoformat() <= day <= today.isoformat():
-            counts[day] = counts.get(day, 0) + 1
-            recent.append({"id": doc.id, "exercise_id": entry.get("task_id", ""), "name": entry.get("exer_name", ""), "weight": entry.get("weight", 0), "reps": entry.get("rep", 0), "date": recorded.isoformat()})
-    recent.sort(key=lambda item: item["date"], reverse=True)
-    return {
-        "start": start.isoformat(),
-        "end": end.isoformat(),
-        "active_days": len(counts),
-        "recent": recent[:5],
-        "days": [{"date": (start + timedelta(days=offset)).isoformat(), "sets": counts.get((start + timedelta(days=offset)).isoformat(), 0)} for offset in range(days)],
-    }
-
-
-def get_entries_by_exercise(exercise_id: str, username: str):
->>>>>>> Stashed changes
     saved_reps = (
         db.collection("diary_entries")
         .where("task_id", "==", exercise_id)
         .where("user", "==", username)
     )
+
     docs = list(saved_reps.stream())
 
     saves = []
+
     for doc in docs:
         data = doc.to_dict()
         data["id"] = doc.id
         saves.append(data)
 
     saves.sort(key=_entry_sort_key)
+
     return saves
+
+
+def add_workout(workout: NewWorkout, username: str):
+    _require_saved_exercise(username, workout.exercise_id)
+
+    exercise = _get_exercise(workout.exercise_id).to_dict() or {}
+
+    created_at = datetime.now(timezone.utc)
+    workout_id = str(uuid4())
+
+    batch = db.batch()
+
+    for index, item in enumerate(workout.sets):
+        ref = db.collection("diary_entries").document()
+
+        batch.set(
+            ref,
+            {
+                "user": username,
+                "task_id": workout.exercise_id,
+                "exer_name": exercise.get("exer_name", ""),
+                "rep": item.reps,
+                "weight": item.weight,
+                "date": created_at,
+                "workout_id": workout_id,
+                "set_index": index,
+                "note": workout.note.strip(),
+            },
+        )
+
+    batch.commit()
+
+    return {
+        "workout_id": workout_id,
+        "sets_saved": len(workout.sets),
+    }
+
+
+def get_activity(username: str, days: int = 182):
+    local_zone = ZoneInfo("Europe/Budapest")
+
+    today = datetime.now(local_zone).date()
+    end = today + timedelta(days=6 - today.weekday())
+    start = end - timedelta(days=days - 1)
+
+    query = db.collection("diary_entries").where("user", "==", username)
+
+    counts: dict[str, int] = {}
+    recent: list[dict] = []
+
+    for doc in query.stream():
+        entry = doc.to_dict() or {}
+        recorded = entry.get("date")
+
+        if not isinstance(recorded, datetime):
+            continue
+
+        day = recorded.astimezone(local_zone).date().isoformat()
+
+        if start.isoformat() <= day <= today.isoformat():
+            counts[day] = counts.get(day, 0) + 1
+
+            recent.append(
+                {
+                    "id": doc.id,
+                    "exercise_id": entry.get("task_id", ""),
+                    "name": entry.get("exer_name", ""),
+                    "weight": entry.get("weight", 0),
+                    "reps": entry.get("rep", 0),
+                    "date": recorded.isoformat(),
+                }
+            )
+
+    recent.sort(key=lambda item: item["date"], reverse=True)
+
+    return {
+        "start": start.isoformat(),
+        "end": end.isoformat(),
+        "active_days": len(counts),
+        "recent": recent[:5],
+        "days": [
+            {
+                "date": (start + timedelta(days=offset)).isoformat(),
+                "sets": counts.get(
+                    (start + timedelta(days=offset)).isoformat(),
+                    0,
+                ),
+            }
+            for offset in range(days)
+        ],
+    }
 
 
 def _build_personal_records(entries: list[dict]):
@@ -310,7 +370,12 @@ def _build_personal_records(entries: list[dict]):
 
         current_best = best_by_reps.get(reps)
         weight = _to_number(entry.get("weight"))
-        is_better = not current_best or weight > _to_number(current_best.get("weight"))
+
+        is_better = (
+            not current_best
+            or weight > _to_number(current_best.get("weight"))
+        )
+
         is_later_tie = (
             current_best
             and weight == _to_number(current_best.get("weight"))
@@ -321,6 +386,7 @@ def _build_personal_records(entries: list[dict]):
             best_by_reps[reps] = entry
 
     rows = []
+
     for reps, entry in best_by_reps.items():
         rows.append(
             {
@@ -351,7 +417,9 @@ def _build_monthly_overview(entries: list[dict]):
             "entry": entry,
             "estimated_one_rep_max": _estimate_one_rep_max(entry),
             "key": str(entry.get("id", "")),
-            "period_label": str(entry.get("date") or entry.get("id") or "Naplózás"),
+            "period_label": str(
+                entry.get("date") or entry.get("id") or "Naplózás"
+            ),
         }
         for entry in reversed(entries)
     ]
@@ -380,6 +448,7 @@ def _build_yearly_overview(entries: list[dict]):
         }
         for entry in best_by_month.values()
     ]
+
     rows.sort(key=lambda row: row["sort_value"], reverse=True)
 
     for row in rows:
@@ -392,13 +461,17 @@ def get_entries_by_exercise(exercise_id: str, username: str):
     saves = _load_entries_by_exercise(exercise_id, username)
 
     if not saves:
-        raise HTTPException(status_code=404, detail="Nincs ilyen feladatod naplózva.")
+        raise HTTPException(
+            status_code=404,
+            detail="Nincs ilyen feladatod naplózva.",
+        )
 
     return saves
 
 
 def get_progress_summary(exercise_id: str, username: str):
     _require_saved_exercise(username, exercise_id)
+
     entries = _load_entries_by_exercise(exercise_id, username)
 
     return {
@@ -425,10 +498,17 @@ def delete_diary_entry(entry_id: str, username: str):
     doc = doc_ref.get()
 
     if not doc.exists:
-        raise HTTPException(status_code=404, detail="Naplóbejegyzés nem található")
+        raise HTTPException(
+            status_code=404,
+            detail="Naplóbejegyzés nem található",
+        )
 
     if doc.to_dict().get("user") != username:
-        raise HTTPException(status_code=403, detail="Nincs jogosultságod ezt törölni")
+        raise HTTPException(
+            status_code=403,
+            detail="Nincs jogosultságod ezt törölni",
+        )
 
     doc_ref.delete()
+
     return {"message": "Sikeresen törölve"}
